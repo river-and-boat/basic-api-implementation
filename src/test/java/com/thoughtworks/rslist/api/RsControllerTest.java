@@ -1,5 +1,6 @@
 package com.thoughtworks.rslist.api;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.rslist.model.Trending;
 import org.junit.jupiter.api.Test;
@@ -62,5 +63,23 @@ class RsControllerTest {
                 .andExpect(status().isOk());
     }
 
+    @Test
+    public void testupdateOneTrendingEventWithKeyWord()
+            throws Exception {
+        ObjectMapper objectMapper = new ObjectMapper();
+        Trending trending = new Trending();
+        trending.setId(3);
+        trending.setKeyWord("国际新闻");
+        String updateTrendingStr = objectMapper.writeValueAsString(trending);
 
+        mockMvc.perform(post("/trendings/newTrending")
+                .content(updateTrendingStr)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(get("/trendings/" + 3))
+                .andExpect(jsonPath("$.trendingName",is("热搜事件3")))
+                .andExpect(jsonPath("$.keyWord",is("国际新闻")))
+                .andExpect(status().isOk());
+    }
 }
