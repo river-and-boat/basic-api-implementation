@@ -1,16 +1,19 @@
 package com.thoughtworks.rslist.api;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thoughtworks.rslist.model.Trending;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import static org.hamcrest.Matchers.is;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -42,4 +45,22 @@ class RsControllerTest {
                 .andExpect(jsonPath("$[2].keyWord", is("无分类")))
                 .andExpect(status().isOk());
     }
+
+    @Test
+    public void testAddOneTrendingEvent() throws Exception {
+        ObjectMapper objectMapper = new ObjectMapper();
+        String trendingStr = objectMapper.writeValueAsString(new Trending(6,"热搜事件6","无分类"));
+
+        mockMvc.perform(post("/trendings/newTrending")
+                .content(trendingStr)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(get("/trendings/6"))
+                .andExpect(jsonPath("$.trendingName",is("热搜事件6")))
+                .andExpect(jsonPath("$.keyWord",is("无分类")))
+                .andExpect(status().isOk());
+    }
+
+
 }
