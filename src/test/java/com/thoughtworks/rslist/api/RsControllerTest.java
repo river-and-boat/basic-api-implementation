@@ -20,11 +20,26 @@ class RsControllerTest {
     private MockMvc mockMvc;
 
     @Test
-    public void testAccessOneRS() throws Exception {
+    public void testAccessOneTrending() throws Exception {
         Integer accessingRSId = 1;
         mockMvc.perform(get("/trendings/" + accessingRSId))
                 .andExpect(jsonPath("$.trendingName",is("热搜事件1")))
                 .andExpect(jsonPath("$.keyWord",is("无分类")))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testAccessTrendingListFromStartToEnd() throws Exception {
+        Integer startId = 1;
+        Integer endId = 3;
+        mockMvc.perform(get("/trendings/range?startId=" + startId + "&endId=" + endId))
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$[0].trendingName", is("热搜事件1")))
+                .andExpect(jsonPath("$[0].keyWord", is("无分类")))
+                .andExpect(jsonPath("$[1].trendingName", is("热搜事件2")))
+                .andExpect(jsonPath("$[1].keyWord", is("无分类")))
+                .andExpect(jsonPath("$[2].trendingName", is("热搜事件3")))
+                .andExpect(jsonPath("$[2].keyWord", is("无分类")))
                 .andExpect(status().isOk());
     }
 }
