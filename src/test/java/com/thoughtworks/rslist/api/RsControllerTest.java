@@ -82,4 +82,24 @@ class RsControllerTest {
                 .andExpect(jsonPath("$.keyWord",is("国际新闻")))
                 .andExpect(status().isOk());
     }
+
+    @Test
+    public void testupdateOneTrendingEventWithName()
+            throws Exception {
+        ObjectMapper objectMapper = new ObjectMapper();
+        Trending trending = new Trending();
+        trending.setId(3);
+        trending.setTrendingName("修改热搜3");
+        String updateTrendingStr = objectMapper.writeValueAsString(trending);
+
+        mockMvc.perform(post("/trendings/newTrending")
+                .content(updateTrendingStr)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(get("/trendings/" + 3))
+                .andExpect(jsonPath("$.trendingName",is("修改热搜3")))
+                .andExpect(jsonPath("$.keyWord",is("无分类")))
+                .andExpect(status().isOk());
+    }
 }
