@@ -57,4 +57,15 @@ public class RsController {
             }
         });
     }
+
+    @DeleteMapping("/trendings/{id}")
+    public void deleteOneTrending(@PathVariable("id") Optional<Integer> id) {
+        id.ifPresent(index -> {
+            trendingList.stream()
+                    .filter(t -> t.getId().compareTo(index) == 0)
+                    .findFirst().ifPresent(s -> {
+                        trendingList.remove(s);
+            });
+        });
+    }
 }
