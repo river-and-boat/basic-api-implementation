@@ -1,10 +1,9 @@
 package com.thoughtworks.rslist.api;
 
 import com.thoughtworks.rslist.entity.GenderEnum;
+import com.thoughtworks.rslist.entity.Trending;
 import com.thoughtworks.rslist.entity.User;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -32,6 +31,20 @@ public class UserController {
                     .orElse(null);
         }
         return null;
+    }
+
+    @PostMapping("/users/")
+    public void addNewUser(@RequestBody Optional<User> newUser) {
+        newUser.ifPresent(t -> {
+            boolean userIsPresent = userList.stream()
+                    .filter(s -> s.getUserName().equals(t.getUserName()))
+                    .findFirst()
+                    .isPresent();
+            if (!userIsPresent) {
+                // 新增
+                userList.add(newUser.get());
+            }
+        });
     }
 
 }
