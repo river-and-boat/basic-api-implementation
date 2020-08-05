@@ -24,8 +24,7 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 class TrendingControllerTest {
@@ -84,12 +83,13 @@ class TrendingControllerTest {
     @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
     public void testAddOneTrendingEvent() throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
-        String trendingStr = objectMapper.writeValueAsString(new Trending(6, "热搜事件6", "无分类", null));
+        String trendingStr = objectMapper.writeValueAsString(new Trending(6, "热搜事件6", "无分类", new User()));
 
         mockMvc.perform(post("/trendings/newTrending")
                 .content(trendingStr)
                 .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+                .andExpect(header().string("index","6"))
+                .andExpect(status().isCreated());
 
         mockMvc.perform(get("/trendings/6"))
                 .andExpect(jsonPath("$.trendingName", is("热搜事件6")))

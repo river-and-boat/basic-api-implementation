@@ -24,6 +24,8 @@ public class TrendingService {
 
     private List<Trending> trendingList;
 
+    private final static Integer NAN_TRENDING = -1;
+
     public TrendingService(TrendingRepository trendingRepository, UserService userService) {
         this.trendingRepository = trendingRepository;
         trendingList = trendingRepository.getTrendingList();
@@ -48,22 +50,25 @@ public class TrendingService {
         return trendings;
     }
 
-    public void addOrUpdateTrending(Optional<Trending> newTrending) {
-        newTrending.ifPresent(t -> {
-            Optional<String> userName = Optional.ofNullable(t.getUser().getUserName());
+    public Integer addOrUpdateTrending(Optional<Trending> newTrending) {
+        if (newTrending.isPresent()) {
+            Trending trending = newTrending.get();
+            Optional<String> userName = Optional.ofNullable(trending.getUser().getUserName());
             User user = userService.getUserByUserNameService(userName);
             userService.addNewUser(Optional.ofNullable(user));
 
-            Optional<Trending> trending = trendingList.stream()
+            Optional<Trending> trendings = trendingList.stream()
                     .filter(s -> s.getId()
-                            .compareTo(t.getId()) == 0)
+                            .compareTo(trending.getId()) == 0)
                     .findFirst();
-            if (!trending.isPresent()) {
+            if (!trendings.isPresent()) {
                 trendingList.add(newTrending.get());
             } else {
-                trending.get().updateFields(t);
+                trendings.get().updateFields(trending);
             }
-        });
+            return trending.getId();
+        }
+        return NAN_TRENDING;
     }
 
     public void deleteTrendingById(Optional<Integer> id) {

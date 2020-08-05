@@ -2,6 +2,8 @@ package com.thoughtworks.rslist.api;
 
 import com.thoughtworks.rslist.entity.Trending;
 import com.thoughtworks.rslist.service.TrendingService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,8 +32,11 @@ public class TrendingController {
     }
 
     @PostMapping("/trendings/newTrending")
-    public void addNewTrending(@RequestBody Optional<Trending> newTrending) {
-        trendingService.addOrUpdateTrending(newTrending);
+    public ResponseEntity addNewTrending(@RequestBody Optional<Trending> newTrending) {
+        Integer index = trendingService.addOrUpdateTrending(newTrending);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .header("index", index.toString())
+                .body(null);
     }
 
     @PutMapping("/trendings/exist")
