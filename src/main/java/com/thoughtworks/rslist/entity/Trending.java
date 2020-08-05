@@ -1,5 +1,7 @@
 package com.thoughtworks.rslist.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -31,5 +33,15 @@ public class Trending {
         if (newKeyWord != null) {
             this.keyWord = newKeyWord;
         }
+    }
+
+    @JsonIgnore
+    public User getUser() {
+        return user;
+    }
+
+    @JsonProperty
+    public void setUser(User user) {
+        this.user = user;
     }
 }

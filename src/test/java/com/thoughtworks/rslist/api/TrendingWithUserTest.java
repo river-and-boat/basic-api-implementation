@@ -1,6 +1,5 @@
 package com.thoughtworks.rslist.api;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.rslist.entity.GenderEnum;
 import com.thoughtworks.rslist.entity.Trending;
 import com.thoughtworks.rslist.entity.User;
@@ -19,10 +18,11 @@ import java.util.ArrayList;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -64,20 +64,20 @@ public class TrendingWithUserTest {
 
     @Test
     public void testAddTrendingWithUserIntegrate() throws Exception {
-        ObjectMapper objectMapper = new ObjectMapper();
-        User user = new User(2,"Admin",26, GenderEnum.MALE,"hellocq@163.com","15326147230");
-        String trendingStr = objectMapper.writeValueAsString(new Trending(6, "热搜事件6", "无分类", user));
+
+        String trendingStr = "{\"id\":6, \"trendingName\":\"热搜事件6\"," +
+                " \"keyWord\":\"无分类\"," + "\"user\" :{\"id\":2, \"userName\":\"Admin\", " +
+                "\"genderEnum\":\"MALE\", \"email\":\"hellocq@163.com\", \"phone\":\"15326147230\"}}";
 
         mockMvc.perform(post("/trendings/newTrending")
                 .content(trendingStr)
                 .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
 
         mockMvc.perform(get("/trendings/6"))
                 .andExpect(jsonPath("$.trendingName", is("热搜事件6")))
                 .andExpect(jsonPath("$.keyWord", is("无分类")))
-                .andExpect(jsonPath("$.user.userName", is("Admin")))
-                .andExpect(jsonPath("$.user.age", is(26)))
+                .andExpect(jsonPath("$", not(hasKey("user"))))
                 .andExpect(status().isOk());
     }
 }
