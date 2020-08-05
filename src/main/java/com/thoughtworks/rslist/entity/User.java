@@ -31,6 +31,7 @@ public class User {
     @NotNull
     private String userName;
 
+    @NotNull
     private Integer age;
 
     @NotNull

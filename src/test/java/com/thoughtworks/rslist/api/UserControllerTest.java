@@ -82,4 +82,15 @@ class UserControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
+
+    @Test
+    public void addOneUserWithAgeNotNull() throws Exception {
+        ObjectMapper objectMapper = new ObjectMapper();
+        User newUser = new User(2, "newUser", null, GenderEnum.FEMALE, "test@qq.com", "18986457895");
+
+        mockMvc.perform(post("/users/")
+                .content(objectMapper.writeValueAsString(newUser))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
 }
