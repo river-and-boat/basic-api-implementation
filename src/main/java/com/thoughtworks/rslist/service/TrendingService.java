@@ -4,8 +4,10 @@ import com.thoughtworks.rslist.entity.Trending;
 import com.thoughtworks.rslist.entity.User;
 import com.thoughtworks.rslist.exception.BadIndexParamException;
 import com.thoughtworks.rslist.repository.TrendingRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -18,24 +20,19 @@ import java.util.stream.Collectors;
 @Service
 public class TrendingService {
 
-    private final TrendingRepository trendingRepository;
+    @Autowired
+    private TrendingRepository trendingRepository;
 
-    private final UserService userService;
-
-    private List<Trending> trendingList;
+    @Autowired
+    private UserService userService;
 
     private final static Integer NAN_TRENDING = -1;
-
-    public TrendingService(TrendingRepository trendingRepository, UserService userService) {
-        this.trendingRepository = trendingRepository;
-        trendingList = trendingRepository.getTrendingList();
-        this.userService = userService;
-    }
 
     public Trending accessOneTrendingByIdService(Optional<Integer> id)
             throws Exception {
         if (id.isPresent()) {
-            return trendingList.stream().filter(t -> t.getId().compareTo(id.get()) == 0)
+            return trendingRepository.getTrendingList()
+                    .stream().filter(t -> t.getId().compareTo(id.get()) == 0)
                     .findFirst()
                     .orElse(null);
         }
@@ -45,6 +42,7 @@ public class TrendingService {
     public List<Trending> accessTrendingListFromStartToEndService(Optional<Integer> startId, Optional<Integer> endId)
             throws BadIndexParamException {
         if (startId.isPresent() && endId.isPresent()) {
+            ArrayList<Trending> trendingList = trendingRepository.getTrendingList();
             if (startId.get() >= 1 && endId.get() <= trendingList.size()) {
                 List<Trending> trendings = trendingList.stream()
                     .filter(t -> t.getId().compareTo(startId.orElse(1)) >= 0
@@ -58,6 +56,7 @@ public class TrendingService {
 
     public Integer addOrUpdateTrending(Optional<Trending> newTrending) {
         if (newTrending.isPresent()) {
+            ArrayList<Trending> trendingList = trendingRepository.getTrendingList();
             Trending trending = newTrending.get();
             Optional<String> userName = Optional.ofNullable(trending.getUser().getUserName());
             User user = userService.getUserByUserNameService(userName);
@@ -79,6 +78,7 @@ public class TrendingService {
 
     public Integer deleteTrendingById(Optional<Integer> id) {
         if (id.isPresent()) {
+            ArrayList<Trending> trendingList = trendingRepository.getTrendingList();
             Integer index = id.get();
             trendingList.stream()
                     .filter(t -> t.getId().compareTo(index) == 0)

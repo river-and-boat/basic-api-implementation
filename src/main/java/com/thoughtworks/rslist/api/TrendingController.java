@@ -4,6 +4,7 @@ import com.thoughtworks.rslist.entity.Trending;
 import com.thoughtworks.rslist.exception.BadIndexParamException;
 import com.thoughtworks.rslist.exception.CommonErrorMessage;
 import com.thoughtworks.rslist.service.TrendingService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,11 +15,8 @@ import java.util.Optional;
 @RestController
 public class TrendingController {
 
-    private final TrendingService trendingService;
-
-    public TrendingController(TrendingService trendingService) {
-        this.trendingService = trendingService;
-    }
+    @Autowired
+    private TrendingService trendingService;
 
     @GetMapping("/trendings/{id}")
     public ResponseEntity<Trending> accessOneTrendingById(@PathVariable("id") Optional<Integer> id)
@@ -54,14 +52,5 @@ public class TrendingController {
         Integer index = trendingService.deleteTrendingById(id);
         return ResponseEntity.status(HttpStatus.OK)
                 .header("delete", index.toString()).body(null);
-    }
-
-    @ExceptionHandler({BadIndexParamException.class})
-    public ResponseEntity getExceptionHandler(Exception ex) {
-        CommonErrorMessage commonErrorMessage = new CommonErrorMessage();
-        if (ex instanceof BadIndexParamException) {
-            commonErrorMessage.setError("invalid request param");
-        }
-        return ResponseEntity.badRequest().body(commonErrorMessage);
     }
 }

@@ -7,7 +7,14 @@ import com.thoughtworks.rslist.repository.UserRepository;
 import com.thoughtworks.rslist.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -25,12 +32,23 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
+@AutoConfigureMockMvc
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 class UserControllerTest {
 
+    @Autowired
     private MockMvc mockMvc;
 
     @Mock
     private UserRepository userRepository;
+
+    @Autowired
+    @InjectMocks
+    private UserService userService;
+
+    @Autowired
+    private UserController userController;
 
     @BeforeEach
     void init() {
@@ -42,9 +60,7 @@ class UserControllerTest {
                                 new User(3, "JYZ", 26, GenderEnum.MALE, "842714673@qq.com", "18883871607"),
                                 new User(4, "JYZ", 26, GenderEnum.MALE, "842714673@qq.com", "18883871607"),
                                 new User(5, "JYZ", 26, GenderEnum.MALE, "842714673@qq.com", "18883871607")
-                ).collect(Collectors.toList()));
-        UserService userService = new UserService(userRepository);
-        mockMvc = MockMvcBuilders.standaloneSetup(new UserController(userService)).build();
+                        ).collect(Collectors.toList()));
     }
 
     @Test

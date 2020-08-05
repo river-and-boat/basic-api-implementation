@@ -8,7 +8,14 @@ import com.thoughtworks.rslist.service.TrendingService;
 import com.thoughtworks.rslist.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -33,8 +40,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @Description ***
  **/
 @SpringBootTest
+@AutoConfigureMockMvc
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class TrendingWithUserTest {
 
+    @Autowired
     private MockMvc mockMvc;
 
     @Mock
@@ -43,9 +54,15 @@ public class TrendingWithUserTest {
     @Mock
     private UserService userService;
 
+    @Autowired
+    @InjectMocks
+    private TrendingService trendingService;
+
+    @Autowired
+    private TrendingController trendingController;
+
     @BeforeEach
     void init() {
-
         when(trendingRepository.getTrendingList())
                 .thenReturn((ArrayList<Trending>) Stream.of(
                         new Trending(1, "热搜事件1", "无分类", null),
@@ -60,10 +77,6 @@ public class TrendingWithUserTest {
 
         when(userService.addNewUser(any()))
                 .thenReturn(Optional.of(new User(2, "Admin", 26, GenderEnum.MALE, "hellocq@163.com", "15326147230")));
-
-        TrendingService trendingService = new TrendingService(trendingRepository, userService);
-
-        mockMvc = MockMvcBuilders.standaloneSetup(new TrendingController(trendingService)).build();
     }
 
     @Test
