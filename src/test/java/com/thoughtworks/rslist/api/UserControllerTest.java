@@ -37,7 +37,7 @@ class UserControllerTest {
     @Test
     public void addOneUserWithNormalCondition() throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
-        User newUser = new User(2, "newUser", 28, GenderEnum.FEMALE, "test@qq.com", "18986457895");
+        User newUser = new User(2, "newUser", 28, GenderEnum.FEMALE, "test@qq.com", "18883871607");
         mockMvc.perform(post("/users/")
                 .content(objectMapper.writeValueAsString(newUser))
                 .contentType(MediaType.APPLICATION_JSON))
@@ -52,7 +52,7 @@ class UserControllerTest {
     @Test
     public void addOneUserWithNameLargerThan8() throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
-        User newUser = new User(2, "newUserTest", 28, GenderEnum.FEMALE, "test@qq.com", "18986457895");
+        User newUser = new User(2, "newUserTest", 28, GenderEnum.FEMALE, "test@qq.com", "18883871607");
 
         mockMvc.perform(post("/users/")
                 .content(objectMapper.writeValueAsString(newUser))
@@ -63,7 +63,7 @@ class UserControllerTest {
     @Test
     public void addOneUserWithNameNull() throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
-        User newUser = new User(2, null, 28, GenderEnum.FEMALE, "test@qq.com", "18986457895");
+        User newUser = new User(2, null, 28, GenderEnum.FEMALE, "test@qq.com", "18883871607");
 
         mockMvc.perform(post("/users/")
                 .content(objectMapper.writeValueAsString(newUser))
@@ -74,7 +74,7 @@ class UserControllerTest {
     @Test
     public void addOneUserWithGenderNull() throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
-        User newUser = new User(2, "newUser", 28, null, "test@qq.com", "18986457895");
+        User newUser = new User(2, "newUser", 28, null, "test@qq.com", "18883871607");
 
         mockMvc.perform(post("/users/")
                 .content(objectMapper.writeValueAsString(newUser))
@@ -85,7 +85,7 @@ class UserControllerTest {
     @Test
     public void addOneUserWithAgeNotNull() throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
-        User newUser = new User(2, "newUser", null, GenderEnum.FEMALE, "test@qq.com", "18986457895");
+        User newUser = new User(2, "newUser", null, GenderEnum.FEMALE, "test@qq.com", "18883871607");
 
         mockMvc.perform(post("/users/")
                 .content(objectMapper.writeValueAsString(newUser))
@@ -96,7 +96,7 @@ class UserControllerTest {
     @Test
     public void addOneUserWithAgeLargerThan100() throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
-        User newUser = new User(2, "newUser", 200, GenderEnum.FEMALE, "test@qq.com", "18986457895");
+        User newUser = new User(2, "newUser", 200, GenderEnum.FEMALE, "test@qq.com", "18883871607");
 
         mockMvc.perform(post("/users/")
                 .content(objectMapper.writeValueAsString(newUser))
@@ -107,7 +107,7 @@ class UserControllerTest {
     @Test
     public void addOneUserWithAgeLessThan18() throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
-        User newUser = new User(2, "newUser", 12, GenderEnum.FEMALE, "test@qq.com", "18986457895");
+        User newUser = new User(2, "newUser", 12, GenderEnum.FEMALE, "test@qq.com", "18883871607");
 
         mockMvc.perform(post("/users/")
                 .content(objectMapper.writeValueAsString(newUser))
@@ -115,5 +115,25 @@ class UserControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
+    @Test
+    public void addOneUserWithInvalidEmail() throws Exception {
+        ObjectMapper objectMapper = new ObjectMapper();
+        User newUser = new User(2, "newUser", 26, GenderEnum.FEMALE, "test_qq.com", "18883871607");
 
+        mockMvc.perform(post("/users/")
+                .content(objectMapper.writeValueAsString(newUser))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void addOneUserWithInvalidPhoneNumber() throws Exception {
+        ObjectMapper objectMapper = new ObjectMapper();
+        User newUser = new User(2, "newUser", 26, GenderEnum.FEMALE, "test@qq.com", "389864578952");
+
+        mockMvc.perform(post("/users/")
+                .content(objectMapper.writeValueAsString(newUser))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
 }

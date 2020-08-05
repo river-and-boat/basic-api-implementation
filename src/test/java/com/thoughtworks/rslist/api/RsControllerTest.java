@@ -131,7 +131,7 @@ class RsControllerTest {
     }
 
     @Test
-    public void testdeleteTrendingEventById() throws Exception {
+    public void testDeleteTrendingEventById() throws Exception {
         Integer deletingId = 2;
 
         mockMvc.perform(delete("/trendings/" + deletingId))
