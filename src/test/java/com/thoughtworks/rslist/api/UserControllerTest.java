@@ -10,8 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -93,4 +92,28 @@ class UserControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
+
+    @Test
+    public void addOneUserWithAgeLargerThan100() throws Exception {
+        ObjectMapper objectMapper = new ObjectMapper();
+        User newUser = new User(2, "newUser", 200, GenderEnum.FEMALE, "test@qq.com", "18986457895");
+
+        mockMvc.perform(post("/users/")
+                .content(objectMapper.writeValueAsString(newUser))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void addOneUserWithAgeLessThan18() throws Exception {
+        ObjectMapper objectMapper = new ObjectMapper();
+        User newUser = new User(2, "newUser", 12, GenderEnum.FEMALE, "test@qq.com", "18986457895");
+
+        mockMvc.perform(post("/users/")
+                .content(objectMapper.writeValueAsString(newUser))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+
 }
