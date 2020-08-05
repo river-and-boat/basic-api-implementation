@@ -5,6 +5,7 @@ import com.thoughtworks.rslist.entity.Trending;
 import com.thoughtworks.rslist.entity.User;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -34,7 +35,7 @@ public class UserController {
     }
 
     @PostMapping("/users/")
-    public void addNewUser(@RequestBody Optional<User> newUser) {
+    public void addNewUser(@RequestBody @Valid Optional<User> newUser) {
         newUser.ifPresent(t -> {
             boolean userIsPresent = userList.stream()
                     .filter(s -> s.getUserName().equals(t.getUserName()))

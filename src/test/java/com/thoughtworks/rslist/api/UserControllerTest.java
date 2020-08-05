@@ -11,6 +11,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -35,7 +36,7 @@ class UserControllerTest {
     }
 
     @Test
-    public void addOneNormalUser() throws Exception {
+    public void addOneUserWithNormalCondition() throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
         User newUser = new User(2, "newUser", 28, GenderEnum.FEMALE, "test@qq.com", "18986457895");
         mockMvc.perform(post("/users/")
@@ -47,5 +48,38 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.userName", is("newUser")))
                 .andExpect(jsonPath("$.email", is("test@qq.com")))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    public void addOneUserWithNameLargerThan8() throws Exception {
+        ObjectMapper objectMapper = new ObjectMapper();
+        User newUser = new User(2, "newUserTest", 28, GenderEnum.FEMALE, "test@qq.com", "18986457895");
+
+        mockMvc.perform(post("/users/")
+                .content(objectMapper.writeValueAsString(newUser))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void addOneUserWithNameNull() throws Exception {
+        ObjectMapper objectMapper = new ObjectMapper();
+        User newUser = new User(2, null, 28, GenderEnum.FEMALE, "test@qq.com", "18986457895");
+
+        mockMvc.perform(post("/users/")
+                .content(objectMapper.writeValueAsString(newUser))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void addOneUserWithGenderNull() throws Exception {
+        ObjectMapper objectMapper = new ObjectMapper();
+        User newUser = new User(2, "newUser", 28, null, "test@qq.com", "18986457895");
+
+        mockMvc.perform(post("/users/")
+                .content(objectMapper.writeValueAsString(newUser))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
     }
 }
