@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -30,22 +30,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class TrendingControllerTest {
 
     private MockMvc mockMvc;
-
     @Mock
     private TrendingRepository trendingRepository;
-
     @Mock
     private UserService userService;
-
     @BeforeEach
     void init() {
         when(trendingRepository.getTrendingList())
                 .thenReturn((ArrayList<Trending>) Stream.of(
-                        new Trending(1, "热搜事件1", "无分类", null),
-                        new Trending(2, "热搜事件2", "无分类", null),
-                        new Trending(3, "热搜事件3", "无分类", null),
-                        new Trending(4, "热搜事件4", "无分类", null),
-                        new Trending(5, "热搜事件5", "无分类", null)
+                        new Trending(1, "热搜事件1", "无分类", new User()),
+                        new Trending(2, "热搜事件2", "无分类", new User()),
+                        new Trending(3, "热搜事件3", "无分类", new User()),
+                        new Trending(4, "热搜事件4", "无分类", new User()),
+                        new Trending(5, "热搜事件5", "无分类", new User())
                 ).collect(Collectors.toList()));
 
         when(userService.getUserByUserNameService(any()))
@@ -80,7 +77,6 @@ class TrendingControllerTest {
     }
 
     @Test
-    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
     public void testAddOneTrendingEvent() throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
         String trendingStr = objectMapper.writeValueAsString(new Trending(6, "热搜事件6", "无分类", new User()));
@@ -88,7 +84,7 @@ class TrendingControllerTest {
         mockMvc.perform(post("/trendings/newTrending")
                 .content(trendingStr)
                 .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(header().string("index","6"))
+                .andExpect(header().string("add", "6"))
                 .andExpect(status().isCreated());
 
         mockMvc.perform(get("/trendings/6"))
@@ -98,18 +94,19 @@ class TrendingControllerTest {
     }
 
     @Test
-    @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
     public void testupdateOneTrendingEventWithKeyWord()
             throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
         Trending trending = new Trending();
         trending.setId(3);
         trending.setKeyWord("国际新闻");
+        trending.setUser(new User());
         String updateTrendingStr = objectMapper.writeValueAsString(trending);
 
         mockMvc.perform(put("/trendings/exist")
                 .content(updateTrendingStr)
                 .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(header().string("update", "3"))
                 .andExpect(status().isOk());
 
         mockMvc.perform(get("/trendings/" + 3))
@@ -119,18 +116,19 @@ class TrendingControllerTest {
     }
 
     @Test
-    @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
     public void testupdateOneTrendingEventWithName()
             throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
         Trending trending = new Trending();
         trending.setId(3);
         trending.setTrendingName("修改热搜3");
+        trending.setUser(new User());
         String updateTrendingStr = objectMapper.writeValueAsString(trending);
 
         mockMvc.perform(put("/trendings/exist")
                 .content(updateTrendingStr)
                 .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(header().string("update", "3"))
                 .andExpect(status().isOk());
 
         mockMvc.perform(get("/trendings/" + 3))
@@ -140,7 +138,6 @@ class TrendingControllerTest {
     }
 
     @Test
-    @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
     public void testupdateOneTrendingEventWithBothFields()
             throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
@@ -148,11 +145,13 @@ class TrendingControllerTest {
         trending.setId(3);
         trending.setKeyWord("国际新闻");
         trending.setTrendingName("修改热搜3");
+        trending.setUser(new User());
         String updateTrendingStr = objectMapper.writeValueAsString(trending);
 
         mockMvc.perform(put("/trendings/exist")
                 .content(updateTrendingStr)
                 .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(header().string("update", "3"))
                 .andExpect(status().isOk());
 
         mockMvc.perform(get("/trendings/" + 3))
@@ -166,6 +165,7 @@ class TrendingControllerTest {
         Integer deletingId = 2;
 
         mockMvc.perform(delete("/trendings/" + deletingId))
+                .andExpect(header().string("delete", "2"))
                 .andExpect(status().isOk());
 
         mockMvc.perform(get("/trendings/range"))

@@ -19,33 +19,37 @@ public class TrendingController {
     }
 
     @GetMapping("/trendings/{id}")
-    public Trending accessOneTrendingById(@PathVariable("id") Optional<Integer> id)
+    public ResponseEntity<Trending> accessOneTrendingById(@PathVariable("id") Optional<Integer> id)
             throws Exception {
-        return trendingService.accessOneTrendingByIdService(id);
+        return ResponseEntity.ok(trendingService.accessOneTrendingByIdService(id));
     }
 
     @GetMapping("/trendings/range")
-    public List<Trending> accessTrendingListFromStartToEnd(@RequestParam Optional<Integer> startId,
-                                                           @RequestParam Optional<Integer> endId) {
-        return trendingService
-                .accessTrendingListFromStartToEndService(startId, endId);
+    public ResponseEntity<List<Trending>> accessTrendingListFromStartToEnd(@RequestParam Optional<Integer> startId,
+                                                                           @RequestParam Optional<Integer> endId) {
+        return ResponseEntity.ok(trendingService
+                .accessTrendingListFromStartToEndService(startId, endId));
     }
 
     @PostMapping("/trendings/newTrending")
     public ResponseEntity addNewTrending(@RequestBody Optional<Trending> newTrending) {
         Integer index = trendingService.addOrUpdateTrending(newTrending);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .header("index", index.toString())
+                .header("add", index.toString())
                 .body(null);
     }
 
     @PutMapping("/trendings/exist")
-    public void updateTrending(@RequestBody Optional<Trending> existTrending) {
-        trendingService.addOrUpdateTrending(existTrending);
+    public ResponseEntity updateTrending(@RequestBody Optional<Trending> existTrending) {
+        Integer index = trendingService.addOrUpdateTrending(existTrending);
+        return ResponseEntity.status(HttpStatus.OK)
+                .header("update", index.toString()).body(null);
     }
 
     @DeleteMapping("/trendings/{id}")
-    public void deleteOneTrending(@PathVariable("id") Optional<Integer> id) {
-        trendingService.deleteTrendingById(id);
+    public ResponseEntity deleteOneTrending(@PathVariable("id") Optional<Integer> id) {
+        Integer index = trendingService.deleteTrendingById(id);
+        return ResponseEntity.status(HttpStatus.OK)
+                .header("delete", index.toString()).body(null);
     }
 }

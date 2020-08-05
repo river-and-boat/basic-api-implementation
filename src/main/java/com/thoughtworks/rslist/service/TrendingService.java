@@ -3,7 +3,6 @@ package com.thoughtworks.rslist.service;
 import com.thoughtworks.rslist.entity.Trending;
 import com.thoughtworks.rslist.entity.User;
 import com.thoughtworks.rslist.repository.TrendingRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -71,13 +70,16 @@ public class TrendingService {
         return NAN_TRENDING;
     }
 
-    public void deleteTrendingById(Optional<Integer> id) {
-        id.ifPresent(index -> {
+    public Integer deleteTrendingById(Optional<Integer> id) {
+        if (id.isPresent()) {
+            Integer index = id.get();
             trendingList.stream()
                     .filter(t -> t.getId().compareTo(index) == 0)
                     .findFirst().ifPresent(s -> {
                 trendingList.remove(s);
             });
-        });
+            return index;
+        }
+        return NAN_TRENDING;
     }
 }
