@@ -3,6 +3,7 @@ package com.thoughtworks.rslist.service;
 import com.thoughtworks.rslist.entity.Trending;
 import com.thoughtworks.rslist.entity.User;
 import com.thoughtworks.rslist.exception.BadIndexParamException;
+import com.thoughtworks.rslist.exception.IndexOutException;
 import com.thoughtworks.rslist.repository.TrendingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,12 +32,14 @@ public class TrendingService {
     public Trending accessOneTrendingByIdService(Optional<Integer> id)
             throws Exception {
         if (id.isPresent()) {
-            return trendingRepository.getTrendingList()
-                    .stream().filter(t -> t.getId().compareTo(id.get()) == 0)
-                    .findFirst()
-                    .orElse(null);
+            ArrayList<Trending> trendingList = trendingRepository.getTrendingList();
+            if (id.get() <= trendingList.size()) {
+                return trendingList.stream().filter(t -> t.getId().compareTo(id.get()) == 0)
+                        .findFirst()
+                        .orElse(null);
+            }
         }
-        throw new Exception("请输入热搜ID");
+        throw new IndexOutException("invalid index");
     }
 
     public List<Trending> accessTrendingListFromStartToEndService(Optional<Integer> startId, Optional<Integer> endId)
@@ -45,9 +48,9 @@ public class TrendingService {
             ArrayList<Trending> trendingList = trendingRepository.getTrendingList();
             if (startId.get() >= 1 && endId.get() <= trendingList.size()) {
                 List<Trending> trendings = trendingList.stream()
-                    .filter(t -> t.getId().compareTo(startId.orElse(1)) >= 0
-                            && t.getId().compareTo(endId.orElse(trendingList.size())) <= 0)
-                    .collect(Collectors.toList());
+                        .filter(t -> t.getId().compareTo(startId.orElse(1)) >= 0
+                                && t.getId().compareTo(endId.orElse(trendingList.size())) <= 0)
+                        .collect(Collectors.toList());
                 return trendings;
             }
         }

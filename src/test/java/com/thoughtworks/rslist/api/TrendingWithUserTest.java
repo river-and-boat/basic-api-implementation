@@ -99,9 +99,16 @@ public class TrendingWithUserTest {
     }
 
     @Test
-    public void testSelectListWithBadParamRange() throws Exception {
+    public void testSelectTrendingListWithBadParamRange() throws Exception {
         mockMvc.perform(get("/trendings/range?startId=1&endId=100"))
                 .andExpect(jsonPath("$.error",is("invalid request param")))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void testOneTrendingWithBadParam() throws Exception {
+        mockMvc.perform(get("/trendings/100"))
+                .andExpect(jsonPath("$.error",is("invalid index")))
                 .andExpect(status().isBadRequest());
     }
 }
