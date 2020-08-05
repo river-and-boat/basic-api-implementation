@@ -9,7 +9,7 @@ import java.util.stream.Stream;
 @RestController
 public class RsController {
 
-    public static List<Trending> trendingList = Stream.of(
+    public List<Trending> trendingList = Stream.of(
             new Trending(1, "热搜事件1", "无分类"),
             new Trending(2, "热搜事件2", "无分类"),
             new Trending(3, "热搜事件3", "无分类"),

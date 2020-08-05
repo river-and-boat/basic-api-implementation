@@ -2,16 +2,14 @@ package com.thoughtworks.rslist.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.rslist.model.Trending;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -23,11 +21,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class RsControllerTest {
 
-    @Autowired
     private MockMvc mockMvc;
 
+    @BeforeEach
+    void init() {
+        mockMvc = MockMvcBuilders.standaloneSetup(new RsController()).build();
+    }
+
     @Test
-    @Order(1)
     public void testAccessOneTrending() throws Exception {
         Integer accessingRSId = 1;
         mockMvc.perform(get("/trendings/" + accessingRSId))
@@ -37,7 +38,6 @@ class RsControllerTest {
     }
 
     @Test
-    @Order(2)
     public void testAccessTrendingListFromStartToEnd() throws Exception {
         Integer startId = 1;
         Integer endId = 3;
@@ -53,7 +53,6 @@ class RsControllerTest {
     }
 
     @Test
-    @Order(3)
     @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
     public void testAddOneTrendingEvent() throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
@@ -71,7 +70,6 @@ class RsControllerTest {
     }
 
     @Test
-    @Order(4)
     @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
     public void testupdateOneTrendingEventWithKeyWord()
             throws Exception {
@@ -93,7 +91,6 @@ class RsControllerTest {
     }
 
     @Test
-    @Order(5)
     @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
     public void testupdateOneTrendingEventWithName()
             throws Exception {
@@ -115,7 +112,6 @@ class RsControllerTest {
     }
 
     @Test
-    @Order(6)
     @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
     public void testupdateOneTrendingEventWithBothFields()
             throws Exception {
@@ -138,7 +134,6 @@ class RsControllerTest {
     }
 
     @Test
-    @Order(7)
     public void testdeleteTrendingEventById() throws Exception {
         Integer deletingId = 2;
 
