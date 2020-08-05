@@ -4,11 +4,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.rslist.entity.GenderEnum;
 import com.thoughtworks.rslist.entity.Trending;
 import com.thoughtworks.rslist.entity.User;
+import com.thoughtworks.rslist.repository.TrendingRepository;
+import com.thoughtworks.rslist.service.TrendingService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -23,15 +25,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @Description ***
  **/
 @SpringBootTest
-public class RsWithUserTest {
+public class TrendingWithUserTest {
 
     private MockMvc mockMvc;
 
+    @Mock
+    private TrendingRepository trendingRepository;
+
+    private TrendingService trendingService = new TrendingService(trendingRepository);
+
     @BeforeEach
     void init() {
-        mockMvc = MockMvcBuilders.standaloneSetup(new RsController()).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(new TrendingController(trendingService)).build();
     }
-
 
     @Test
     public void testAddTrendingWithNormalUser() throws Exception {

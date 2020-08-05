@@ -3,14 +3,24 @@ package com.thoughtworks.rslist.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.rslist.entity.GenderEnum;
 import com.thoughtworks.rslist.entity.User;
+import com.thoughtworks.rslist.repository.TrendingRepository;
+import com.thoughtworks.rslist.repository.UserRepository;
+import com.thoughtworks.rslist.service.UserService;
+import javafx.beans.binding.When;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.util.ArrayList;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import static org.hamcrest.Matchers.*;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -21,9 +31,17 @@ class UserControllerTest {
 
     private MockMvc mockMvc;
 
+    @Mock
+    private UserRepository userRepository;
+
     @BeforeEach
     void init() {
-        mockMvc = MockMvcBuilders.standaloneSetup(new UserController()).build();
+        when(userRepository.getUserList())
+                .thenReturn((ArrayList<User>)
+                        Stream.of(new User(1, "JiangYuzhou", 26, GenderEnum.MALE, "842714673@qq.com", "18883871607")
+                ).collect(Collectors.toList()));
+        UserService userService = new UserService(userRepository);
+        mockMvc = MockMvcBuilders.standaloneSetup(new UserController(userService)).build();
     }
 
     @Test

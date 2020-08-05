@@ -2,27 +2,47 @@ package com.thoughtworks.rslist.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.rslist.entity.Trending;
+import com.thoughtworks.rslist.repository.TrendingRepository;
+import com.thoughtworks.rslist.service.TrendingService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.util.ArrayList;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
-class RsControllerTest {
+class TrendingControllerTest {
 
     private MockMvc mockMvc;
 
+    @Mock
+    private TrendingRepository trendingRepository;
+
     @BeforeEach
     void init() {
-        mockMvc = MockMvcBuilders.standaloneSetup(new RsController()).build();
+        when(trendingRepository.getTrendingList())
+                .thenReturn((ArrayList<Trending>) Stream.of(
+                        new Trending(1, "热搜事件1", "无分类", null),
+                        new Trending(2, "热搜事件2", "无分类", null),
+                        new Trending(3, "热搜事件3", "无分类", null),
+                        new Trending(4, "热搜事件4", "无分类", null),
+                        new Trending(5, "热搜事件5", "无分类", null)
+                ).collect(Collectors.toList()));
+        TrendingService trendingService = new TrendingService(trendingRepository);
+        mockMvc = MockMvcBuilders.standaloneSetup(new TrendingController(trendingService)).build();
     }
 
     @Test
@@ -76,7 +96,7 @@ class RsControllerTest {
         trending.setKeyWord("国际新闻");
         String updateTrendingStr = objectMapper.writeValueAsString(trending);
 
-        mockMvc.perform(post("/trendings/newTrending")
+        mockMvc.perform(put("/trendings/exist")
                 .content(updateTrendingStr)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
@@ -97,7 +117,7 @@ class RsControllerTest {
         trending.setTrendingName("修改热搜3");
         String updateTrendingStr = objectMapper.writeValueAsString(trending);
 
-        mockMvc.perform(post("/trendings/newTrending")
+        mockMvc.perform(put("/trendings/exist")
                 .content(updateTrendingStr)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
@@ -119,7 +139,7 @@ class RsControllerTest {
         trending.setTrendingName("修改热搜3");
         String updateTrendingStr = objectMapper.writeValueAsString(trending);
 
-        mockMvc.perform(post("/trendings/newTrending")
+        mockMvc.perform(put("/trendings/exist")
                 .content(updateTrendingStr)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
