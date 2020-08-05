@@ -15,6 +15,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -57,6 +58,9 @@ public class TrendingWithUserTest {
         when(userService.getUserByUserNameService(any()))
                 .thenReturn(new User(1, "JYZ", 26, GenderEnum.MALE, "842714673@qq.com", "18883871607"));
 
+        when(userService.addNewUser(any()))
+                .thenReturn(Optional.of(new User(2, "Admin", 26, GenderEnum.MALE, "hellocq@163.com", "15326147230")));
+
         TrendingService trendingService = new TrendingService(trendingRepository, userService);
 
         mockMvc = MockMvcBuilders.standaloneSetup(new TrendingController(trendingService)).build();
@@ -67,7 +71,7 @@ public class TrendingWithUserTest {
 
         String trendingStr = "{\"id\":6, \"trendingName\":\"热搜事件6\"," +
                 " \"keyWord\":\"无分类\"," + "\"user\" :{\"id\":2, \"userName\":\"Admin\", " +
-                "\"genderEnum\":\"MALE\", \"email\":\"hellocq@163.com\", \"phone\":\"15326147230\"}}";
+                "\"age\": 26, \"genderEnum\":\"MALE\", \"email\":\"hellocq@163.com\", \"phone\":\"15326147230\"}}";
 
         mockMvc.perform(post("/trendings/newTrending")
                 .content(trendingStr)

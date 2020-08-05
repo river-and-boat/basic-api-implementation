@@ -1,5 +1,6 @@
 package com.thoughtworks.rslist.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -28,20 +29,25 @@ public class User {
 
     @Size(max = 8)
     @NotNull
+    @JsonProperty("user_name")
     private String userName;
 
     @NotNull
     @Min(18)
     @Max(100)
+    @JsonProperty("user_age")
     private Integer age;
 
     @NotNull
+    @JsonProperty("user_gender")
     private GenderEnum genderEnum;
 
     @Email
+    @JsonProperty("user_email")
     private String email;
 
     @Pattern(regexp = "^1[3456789]\\d{9}$")
+    @JsonProperty("user_phone")
     private String phone;
 }
 

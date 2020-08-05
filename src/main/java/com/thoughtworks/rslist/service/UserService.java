@@ -34,16 +34,21 @@ public class UserService {
         return null;
     }
 
-    public void addNewUser(Optional<User> newUser) {
-        newUser.ifPresent(t -> {
+    public Optional<User> addNewUser(Optional<User> newUser) {
+        if (newUser.isPresent()) {
             boolean userIsPresent = userList.stream()
-                    .filter(s -> s.getUserName().equals(t.getUserName()))
+                    .filter(s -> s.getUserName().equals(newUser.get().getUserName()))
                     .findFirst()
                     .isPresent();
             if (!userIsPresent) {
                 // 新增
                 userList.add(newUser.get());
             }
-        });
+        }
+        return newUser;
+    }
+
+    public List<User> getAllUsers() {
+        return userList;
     }
 }

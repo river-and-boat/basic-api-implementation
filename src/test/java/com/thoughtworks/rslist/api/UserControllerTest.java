@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -36,7 +36,12 @@ class UserControllerTest {
     void init() {
         when(userRepository.getUserList())
                 .thenReturn((ArrayList<User>)
-                        Stream.of(new User(1, "JYZ", 26, GenderEnum.MALE, "842714673@qq.com", "18883871607")
+                        Stream.of(
+                                new User(1, "JYZ", 26, GenderEnum.MALE, "842714673@qq.com", "18883871607"),
+                                new User(2, "JYZ", 26, GenderEnum.MALE, "842714673@qq.com", "18883871607"),
+                                new User(3, "JYZ", 26, GenderEnum.MALE, "842714673@qq.com", "18883871607"),
+                                new User(4, "JYZ", 26, GenderEnum.MALE, "842714673@qq.com", "18883871607"),
+                                new User(5, "JYZ", 26, GenderEnum.MALE, "842714673@qq.com", "18883871607")
                 ).collect(Collectors.toList()));
         UserService userService = new UserService(userRepository);
         mockMvc = MockMvcBuilders.standaloneSetup(new UserController(userService)).build();
@@ -46,22 +51,22 @@ class UserControllerTest {
     public void getUserByUserName() throws Exception {
         String userName = "JYZ";
         mockMvc.perform(get("/users/" + userName))
-                .andExpect(jsonPath("$.userName", is(userName)))
+                .andExpect(jsonPath("$.user_name", is(userName)))
                 .andExpect(status().isOk());
     }
 
     @Test
     public void addOneUserWithNormalCondition() throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
-        User newUser = new User(2, "newUser", 28, GenderEnum.FEMALE, "test@qq.com", "18883871607");
+        User newUser = new User(6, "newUser", 28, GenderEnum.FEMALE, "test@qq.com", "18883871607");
         mockMvc.perform(post("/users/")
                 .content(objectMapper.writeValueAsString(newUser))
                 .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
 
         mockMvc.perform(get("/users/newUser"))
-                .andExpect(jsonPath("$.userName", is("newUser")))
-                .andExpect(jsonPath("$.email", is("test@qq.com")))
+                .andExpect(jsonPath("$.user_name", is("newUser")))
+                .andExpect(jsonPath("$.user_email", is("test@qq.com")))
                 .andExpect(status().isOk());
     }
 
@@ -72,18 +77,18 @@ class UserControllerTest {
         mockMvc.perform(post("/users/")
                 .content(objectMapper.writeValueAsString(newUser))
                 .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
 
         mockMvc.perform(get("/users/JYZ"))
-                .andExpect(jsonPath("$.userName", is("JYZ")))
-                .andExpect(jsonPath("$.email", is("842714673@qq.com")))
+                .andExpect(jsonPath("$.user_name", is("JYZ")))
+                .andExpect(jsonPath("$.user_email", is("842714673@qq.com")))
                 .andExpect(status().isOk());
     }
 
     @Test
     public void addOneUserWithNameLargerThan8() throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
-        User newUser = new User(2, "newUserTest", 28, GenderEnum.FEMALE, "test@qq.com", "18883871607");
+        User newUser = new User(6, "newUserTest", 28, GenderEnum.FEMALE, "test@qq.com", "18883871607");
 
         mockMvc.perform(post("/users/")
                 .content(objectMapper.writeValueAsString(newUser))
@@ -94,7 +99,7 @@ class UserControllerTest {
     @Test
     public void addOneUserWithNameNull() throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
-        User newUser = new User(2, null, 28, GenderEnum.FEMALE, "test@qq.com", "18883871607");
+        User newUser = new User(6, null, 28, GenderEnum.FEMALE, "test@qq.com", "18883871607");
 
         mockMvc.perform(post("/users/")
                 .content(objectMapper.writeValueAsString(newUser))
@@ -105,7 +110,7 @@ class UserControllerTest {
     @Test
     public void addOneUserWithGenderNull() throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
-        User newUser = new User(2, "newUser", 28, null, "test@qq.com", "18883871607");
+        User newUser = new User(6, "newUser", 28, null, "test@qq.com", "18883871607");
 
         mockMvc.perform(post("/users/")
                 .content(objectMapper.writeValueAsString(newUser))
@@ -116,7 +121,7 @@ class UserControllerTest {
     @Test
     public void addOneUserWithAgeNotNull() throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
-        User newUser = new User(2, "newUser", null, GenderEnum.FEMALE, "test@qq.com", "18883871607");
+        User newUser = new User(6, "newUser", null, GenderEnum.FEMALE, "test@qq.com", "18883871607");
 
         mockMvc.perform(post("/users/")
                 .content(objectMapper.writeValueAsString(newUser))
@@ -127,7 +132,7 @@ class UserControllerTest {
     @Test
     public void addOneUserWithAgeLargerThan100() throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
-        User newUser = new User(2, "newUser", 200, GenderEnum.FEMALE, "test@qq.com", "18883871607");
+        User newUser = new User(6, "newUser", 200, GenderEnum.FEMALE, "test@qq.com", "18883871607");
 
         mockMvc.perform(post("/users/")
                 .content(objectMapper.writeValueAsString(newUser))
@@ -138,7 +143,7 @@ class UserControllerTest {
     @Test
     public void addOneUserWithAgeLessThan18() throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
-        User newUser = new User(2, "newUser", 12, GenderEnum.FEMALE, "test@qq.com", "18883871607");
+        User newUser = new User(6, "newUser", 12, GenderEnum.FEMALE, "test@qq.com", "18883871607");
 
         mockMvc.perform(post("/users/")
                 .content(objectMapper.writeValueAsString(newUser))
@@ -149,7 +154,7 @@ class UserControllerTest {
     @Test
     public void addOneUserWithInvalidEmail() throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
-        User newUser = new User(2, "newUser", 26, GenderEnum.FEMALE, "test_qq.com", "18883871607");
+        User newUser = new User(6, "newUser", 26, GenderEnum.FEMALE, "test_qq.com", "18883871607");
 
         mockMvc.perform(post("/users/")
                 .content(objectMapper.writeValueAsString(newUser))
@@ -160,11 +165,24 @@ class UserControllerTest {
     @Test
     public void addOneUserWithInvalidPhoneNumber() throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
-        User newUser = new User(2, "newUser", 26, GenderEnum.FEMALE, "test@qq.com", "389864578952");
+        User newUser = new User(6, "newUser", 26, GenderEnum.FEMALE, "test@qq.com", "389864578952");
 
         mockMvc.perform(post("/users/")
                 .content(objectMapper.writeValueAsString(newUser))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void getAllUsers() throws Exception {
+        mockMvc.perform(get("/users/all"))
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$",hasSize(5)))
+                .andExpect(jsonPath("$[0]",hasKey("user_name")))
+                .andExpect(jsonPath("$[0]",hasKey("user_age")))
+                .andExpect(jsonPath("$[0]",hasKey("user_gender")))
+                .andExpect(jsonPath("$[0]",hasKey("user_email")))
+                .andExpect(jsonPath("$[0]",hasKey("user_phone")))
+                .andExpect(status().isOk());
     }
 }

@@ -12,7 +12,6 @@ import java.util.ArrayList;
  **/
 @Repository
 public class TrendingRepository {
-
     public ArrayList<Trending> getTrendingList() {
         return new ArrayList<>();
     }
