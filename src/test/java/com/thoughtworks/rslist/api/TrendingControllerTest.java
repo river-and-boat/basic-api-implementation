@@ -1,9 +1,12 @@
 package com.thoughtworks.rslist.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thoughtworks.rslist.entity.GenderEnum;
 import com.thoughtworks.rslist.entity.Trending;
+import com.thoughtworks.rslist.entity.User;
 import com.thoughtworks.rslist.repository.TrendingRepository;
 import com.thoughtworks.rslist.service.TrendingService;
+import com.thoughtworks.rslist.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -18,6 +21,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.hamcrest.Matchers.is;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -31,6 +35,9 @@ class TrendingControllerTest {
     @Mock
     private TrendingRepository trendingRepository;
 
+    @Mock
+    private UserService userService;
+
     @BeforeEach
     void init() {
         when(trendingRepository.getTrendingList())
@@ -41,7 +48,11 @@ class TrendingControllerTest {
                         new Trending(4, "热搜事件4", "无分类", null),
                         new Trending(5, "热搜事件5", "无分类", null)
                 ).collect(Collectors.toList()));
-        TrendingService trendingService = new TrendingService(trendingRepository);
+
+        when(userService.getUserByUserNameService(any()))
+                .thenReturn(new User(1, "JYZ", 26, GenderEnum.MALE, "842714673@qq.com", "18883871607"));
+
+        TrendingService trendingService = new TrendingService(trendingRepository, userService);
         mockMvc = MockMvcBuilders.standaloneSetup(new TrendingController(trendingService)).build();
     }
 

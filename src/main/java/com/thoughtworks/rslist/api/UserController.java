@@ -25,10 +25,6 @@ public class UserController {
         this.userService = userService;
     }
 
-    public List<User> userList = Stream.of(
-            new User(1, "JiangYuzhou", 26, GenderEnum.MALE, "842714673@qq.com", "18883871607")
-    ).collect(Collectors.toList());
-
     @GetMapping("/users/{userName}")
     public User getUserByUserName(@PathVariable("userName") Optional<String> userName) {
         return userService.getUserByUserNameService(userName);

@@ -1,7 +1,9 @@
 package com.thoughtworks.rslist.service;
 
 import com.thoughtworks.rslist.entity.Trending;
+import com.thoughtworks.rslist.entity.User;
 import com.thoughtworks.rslist.repository.TrendingRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,11 +20,14 @@ public class TrendingService {
 
     private final TrendingRepository trendingRepository;
 
+    private final UserService userService;
+
     private List<Trending> trendingList;
 
-    public TrendingService(TrendingRepository trendingRepository) {
+    public TrendingService(TrendingRepository trendingRepository, UserService userService) {
         this.trendingRepository = trendingRepository;
         trendingList = trendingRepository.getTrendingList();
+        this.userService = userService;
     }
 
     public Trending accessOneTrendingByIdService(Optional<Integer> id)
@@ -45,6 +50,10 @@ public class TrendingService {
 
     public void addOrUpdateTrending(Optional<Trending> newTrending) {
         newTrending.ifPresent(t -> {
+            Optional<String> userName = Optional.ofNullable(t.getUser().getUserName());
+            User user = userService.getUserByUserNameService(userName);
+            userService.addNewUser(Optional.ofNullable(user));
+
             Optional<Trending> trending = trendingList.stream()
                     .filter(s -> s.getId()
                             .compareTo(t.getId()) == 0)

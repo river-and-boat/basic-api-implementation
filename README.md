@@ -17,7 +17,7 @@
   }
   ``` 
   
-* 如果userName已存在在user列表中的话则只需添加热搜事件到热搜事件列表，如果userName不存在，则将User添加到热搜事件列表中（相当于注册用户）
+* 如果userName已存在在user列表中的话则只需添加热搜事件到热搜事件列表，如果userName不存在，则将User添加到User列表中（相当于注册用户）
 * 需要对请求进行校验：其中user keyword eventName都不能为空, user的校验规则：
     ```
   名称(不超过8位字符，不能为空)
