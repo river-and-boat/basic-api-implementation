@@ -1,10 +1,9 @@
 package com.thoughtworks.rslist.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thoughtworks.rslist.model.Trending;
-import org.junit.jupiter.api.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import com.thoughtworks.rslist.entity.Trending;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
@@ -17,8 +16,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
-@AutoConfigureMockMvc
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class RsControllerTest {
 
     private MockMvc mockMvc;
@@ -56,7 +53,7 @@ class RsControllerTest {
     @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
     public void testAddOneTrendingEvent() throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
-        String trendingStr = objectMapper.writeValueAsString(new Trending(6, "热搜事件6", "无分类"));
+        String trendingStr = objectMapper.writeValueAsString(new Trending(6, "热搜事件6", "无分类", null));
 
         mockMvc.perform(post("/trendings/newTrending")
                 .content(trendingStr)

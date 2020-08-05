@@ -1,6 +1,8 @@
 package com.thoughtworks.rslist.api;
-import com.thoughtworks.rslist.model.Trending;
+
+import com.thoughtworks.rslist.entity.Trending;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -10,11 +12,11 @@ import java.util.stream.Stream;
 public class RsController {
 
     public List<Trending> trendingList = Stream.of(
-            new Trending(1, "热搜事件1", "无分类"),
-            new Trending(2, "热搜事件2", "无分类"),
-            new Trending(3, "热搜事件3", "无分类"),
-            new Trending(4, "热搜事件4", "无分类"),
-            new Trending(5, "热搜事件5", "无分类")
+            new Trending(1, "热搜事件1", "无分类", null),
+            new Trending(2, "热搜事件2", "无分类", null),
+            new Trending(3, "热搜事件3", "无分类", null),
+            new Trending(4, "热搜事件4", "无分类", null),
+            new Trending(5, "热搜事件5", "无分类", null)
     ).collect(Collectors.toList());
 
     @GetMapping("/trendings/{id}")
@@ -62,7 +64,7 @@ public class RsController {
             trendingList.stream()
                     .filter(t -> t.getId().compareTo(index) == 0)
                     .findFirst().ifPresent(s -> {
-                        trendingList.remove(s);
+                trendingList.remove(s);
             });
         });
     }
