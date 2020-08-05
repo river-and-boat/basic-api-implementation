@@ -9,6 +9,7 @@ import com.thoughtworks.rslist.service.TrendingService;
 import com.thoughtworks.rslist.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -33,6 +34,7 @@ class TrendingControllerTest {
     private TrendingRepository trendingRepository;
     @Mock
     private UserService userService;
+
     @BeforeEach
     void init() {
         when(trendingRepository.getTrendingList())

@@ -43,6 +43,16 @@
 * hint: @JsonpProperty的使用
 notice: 注意@Valid和@Validated的配合使用
 
+#### 作业3:
+* 给所有接口添加错误处理：
+    1. get /rs/list时对start和end进行校验，如果超出范围则返回 400 {error:"invalid request param"}
+    2. get /rs/{index} 对index进行校验，如果超出范围则返回 400 {error:"invalid index"}
+    3. post /rs/event 对RsEvent进行校验，如果不满足校验规则(User和RsEvent定义的校验规则)，则返回 400 {error:"invalid param"}
+    4. post /user 对User进行校验，如果不满足校验规则，则返回 400 {error:"invalid user"}
+    5. 先阅读：https://www.baeldung.com/spring-boot-logging
+       在我们的exceptionHandler中添加日志，记录下错误的信息（error级别），运行程序试着观察是否有日志打印
+* 先写测试（除了日志）！
+
 ### 历史作业：
 根据课堂上的demo，完成下面需求
 1. 提供获取某一条热搜事件的接口
@@ -51,7 +61,7 @@ notice: 注意@Valid和@Validated的配合使用
 4. 提供修改某条热搜事件的接口（demo没有展示，请大家自己完成）
 5. 提供删除某条热搜事件的接口（demo没有展示，请大家自己完成）
 
-#### 需求4、5详细描述
+需求4、5详细描述
 
 * 需求4： 修改某条事件时（通过参数传递的序号，修改列表中对应的事件数据），如果RequestBody只传了eventName没有传keyword那么仅仅只修改eventName
          如果只传了keyword没有传eventName，那么只修改keyword字段

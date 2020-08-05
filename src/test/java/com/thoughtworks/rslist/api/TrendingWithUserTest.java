@@ -84,4 +84,11 @@ public class TrendingWithUserTest {
                 .andExpect(jsonPath("$", not(hasKey("user"))))
                 .andExpect(status().isOk());
     }
+
+    @Test
+    public void testSelectListWithBadParamRange() throws Exception {
+        mockMvc.perform(get("/trendings/range?startId=1&endId=100"))
+                .andExpect(jsonPath("$.error",is("invalid request param")))
+                .andExpect(status().isBadRequest());
+    }
 }

@@ -2,6 +2,7 @@ package com.thoughtworks.rslist.service;
 
 import com.thoughtworks.rslist.entity.Trending;
 import com.thoughtworks.rslist.entity.User;
+import com.thoughtworks.rslist.exception.BadIndexParamException;
 import com.thoughtworks.rslist.repository.TrendingRepository;
 import org.springframework.stereotype.Service;
 
@@ -41,12 +42,18 @@ public class TrendingService {
         throw new Exception("请输入热搜ID");
     }
 
-    public List<Trending> accessTrendingListFromStartToEndService(Optional<Integer> startId, Optional<Integer> endId) {
-        List<Trending> trendings = trendingList.stream()
-                .filter(t -> t.getId().compareTo(startId.orElse(1)) >= 0
-                        && t.getId().compareTo(endId.orElse(trendingList.size())) <= 0)
-                .collect(Collectors.toList());
-        return trendings;
+    public List<Trending> accessTrendingListFromStartToEndService(Optional<Integer> startId, Optional<Integer> endId)
+            throws BadIndexParamException {
+        if (startId.isPresent() && endId.isPresent()) {
+            if (startId.get() >= 1 && endId.get() <= trendingList.size()) {
+                List<Trending> trendings = trendingList.stream()
+                    .filter(t -> t.getId().compareTo(startId.orElse(1)) >= 0
+                            && t.getId().compareTo(endId.orElse(trendingList.size())) <= 0)
+                    .collect(Collectors.toList());
+                return trendings;
+            }
+        }
+        throw new BadIndexParamException("invalid request param");
     }
 
     public Integer addOrUpdateTrending(Optional<Trending> newTrending) {
