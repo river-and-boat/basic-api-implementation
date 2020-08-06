@@ -24,12 +24,12 @@ public class UserEntity {
     @GeneratedValue
     private Integer id;
 
-    @Column(name = "user_name")
+    @Column(name = "name")
     private String userName;
 
     private Integer age;
 
-    @Column(name = "gender_enum")
+    @Column(name = "gender")
     private GenderEnum genderEnum;
     private String email;
     private String phone;
