@@ -167,7 +167,7 @@ class TrendingControllerTest {
     }
 
     @Test
-    public void testPatchTrendingEventWhenTrendingIdMatchUserId()
+    public void testPatchTrendingEventWhenTrendingIdDisMatchUserId()
             throws Exception {
         UserEntity userEntity = new UserEntity();
         userEntity.setAge(32);
@@ -189,6 +189,36 @@ class TrendingControllerTest {
 
         String requestBody = "{\"trendingName\":\"new Event\"," +
                 " \"keyWord\":\"new key word\", \"userId\":1";
+
+        mockMvc.perform(put("/trendings/exist/" + latestTrendingId)
+                .content(requestBody)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void testPatchTrendingEventWithNullUserId()
+            throws Exception {
+        UserEntity userEntity = new UserEntity();
+        userEntity.setAge(32);
+        userEntity.setUserName("Admin");
+        userEntity.setEmail("hellocq@163.com");
+        userEntity.setGenderEnum(GenderEnum.MALE);
+        userEntity.setPhone("15326147230");
+        userRepository.save(userEntity);
+        Integer latestUserId = userRepository.findAll().get(0).getId();
+
+        String trendingStr = "{\"trendingName\":\"Trend 6\", " +
+                "\"keyWord\":\"no\"," + "\"user\" :{\"id\":" + latestUserId + ", \"user_name\":\"Admin\", \"user_age\": 32," +
+                "\"user_gender\":\"MALE\", \"user_email\":\"hellocq@163.com\", \"user_phone\":\"15326147230\"}}";
+        mockMvc.perform(post("/trendings/newTrending")
+                .content(trendingStr)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated());
+        Integer latestTrendingId = userRepository.findAll().get(0).getId();
+
+        String requestBody = "{\"trendingName\":\"new Event\"," +
+                " \"keyWord\":\"new key word\"";
 
         mockMvc.perform(put("/trendings/exist/" + latestTrendingId)
                 .content(requestBody)
