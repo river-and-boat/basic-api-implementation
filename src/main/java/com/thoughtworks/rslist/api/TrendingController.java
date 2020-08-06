@@ -42,7 +42,7 @@ public class TrendingController {
     }
 
     @PutMapping("/trendings/exist/{trendingId}")
-    public ResponseEntity updateTrending(@PathVariable Optional<Integer> trendingId,
+    public ResponseEntity updateTrending(@PathVariable("trendingId") Optional<Integer> trendingId,
                                          @RequestBody Optional<Trending> existTrending)
             throws BadIndexParamException {
         Trending trendingResult = trendingService.updateExistTrending(existTrending, trendingId);

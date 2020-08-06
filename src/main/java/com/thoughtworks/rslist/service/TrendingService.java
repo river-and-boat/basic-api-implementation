@@ -79,8 +79,13 @@ public class TrendingService {
         if (trendingId.isPresent()) {
             Optional<TrendingEntity> trendingEntity = trendingRepository.findById(trendingId.get());
             if (trendingEntity.isPresent()) {
-                if (trendingEntity.get().getUserId().compareTo(newTrending.get().getUserId()) == 0) {
-                    return new Trending();
+                TrendingEntity beforeEdition = trendingEntity.get();
+                Trending editionObject = newTrending.get();
+                if (beforeEdition.getUserId().compareTo(editionObject.getUserId()) == 0) {
+                    beforeEdition.setTrendingName(editionObject.getTrendingName());
+                    beforeEdition.setKeyWord(editionObject.getKeyWord());
+                    TrendingEntity afterEdition = trendingRepository.save(beforeEdition);
+                    return ConvertTool.convertTrendingEntityToTrending(afterEdition);
                 }
 //                TrendingEntity trendingEntityBeingEdit = trendingEntity.get();
 //                if (trending_before.getTrendingName() != null) {

@@ -188,7 +188,7 @@ class TrendingControllerTest {
         Integer latestTrendingId = userRepository.findAll().get(0).getId();
 
         String requestBody = "{\"trendingName\":\"new Event\"," +
-                " \"keyWord\":\"new key word\", \"userId\":1";
+                " \"keyWord\":\"new key word\", \"userId\":1}";
 
         mockMvc.perform(put("/trendings/exist/" + latestTrendingId)
                 .content(requestBody)
@@ -218,7 +218,7 @@ class TrendingControllerTest {
         Integer latestTrendingId = userRepository.findAll().get(0).getId();
 
         String requestBody = "{\"trendingName\":\"new Event\"," +
-                " \"keyWord\":\"new key word\"";
+                " \"keyWord\":\"new key word\"}";
 
         mockMvc.perform(put("/trendings/exist/" + latestTrendingId)
                 .content(requestBody)
@@ -227,22 +227,37 @@ class TrendingControllerTest {
     }
 
     @Test
-    public void testupdateOneTrendingEventWithName()
+    public void testPatchTrendingEventWithBothParam()
             throws Exception {
+        UserEntity userEntity = new UserEntity();
+        userEntity.setAge(32);
+        userEntity.setUserName("Admin");
+        userEntity.setEmail("hellocq@163.com");
+        userEntity.setGenderEnum(GenderEnum.MALE);
+        userEntity.setPhone("15326147230");
+        userRepository.save(userEntity);
+        Integer latestUserId = userRepository.findAll().get(0).getId();
 
-        String updateTrendingStr = "{\"id\":3, \"trendingName\":\"修改热搜3\"," +
-                " \"keyWord\":\"无分类\"," + "\"user\" :{\"id\":2, \"userName\":\"Admin\", " +
-                "\"genderEnum\":\"MALE\", \"email\":\"hellocq@163.com\", \"phone\":\"15326147230\"}}";
-
-        mockMvc.perform(put("/trendings/exist")
-                .content(updateTrendingStr)
+        String trendingStr = "{\"trendingName\":\"Trend 6\", " +
+                "\"keyWord\":\"no\"," + "\"user\" :{\"id\":" + latestUserId + ", \"user_name\":\"Admin\", \"user_age\": 32," +
+                "\"user_gender\":\"MALE\", \"user_email\":\"hellocq@163.com\", \"user_phone\":\"15326147230\"}}";
+        mockMvc.perform(post("/trendings/newTrending")
+                .content(trendingStr)
                 .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(header().string("update", "3"))
+                .andExpect(status().isCreated());
+        Integer latestTrendingId = trendingRepository.findAll().get(0).getId();
+
+        String requestBody = "{\"trendingName\":\"new Event\"," +
+                " \"keyWord\":\"new key word\", \"userId\":" + latestUserId + "}";
+
+        mockMvc.perform(put("/trendings/exist/" + latestTrendingId.toString())
+                .content(requestBody)
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
-        mockMvc.perform(get("/trendings/" + 3))
-                .andExpect(jsonPath("$.trendingName", is("修改热搜3")))
-                .andExpect(jsonPath("$.keyWord", is("无分类")))
+        mockMvc.perform(get("/trendings/" + latestTrendingId))
+                .andExpect(jsonPath("$.trendingName", is("new Event")))
+                .andExpect(jsonPath("$.keyWord", is("new key word")))
                 .andExpect(status().isOk());
     }
 
