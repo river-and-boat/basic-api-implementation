@@ -125,4 +125,15 @@ public class TrendingWithUserTest {
                 .andExpect(jsonPath("$.error",is("invalid param")))
                 .andExpect(status().isBadRequest());
     }
+
+    @Test
+    public void testPostBadUser() throws Exception {
+        ObjectMapper objectMapper = new ObjectMapper();
+        User newUser = new User(6, "JiangYuZhouTest", 12, GenderEnum.MALE, "test@qq.com", "18883871607");
+        mockMvc.perform(post("/users/")
+                .content(objectMapper.writeValueAsString(newUser))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.error", is("invalid user")))
+                .andExpect(status().isBadRequest());
+    }
 }
