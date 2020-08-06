@@ -1,8 +1,10 @@
 package com.thoughtworks.rslist.repository;
-import com.thoughtworks.rslist.entity.User;
+
+import com.thoughtworks.rslist.entity.UserEntity;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @Auto Jiang Yuzhou
@@ -10,8 +12,6 @@ import java.util.ArrayList;
  * @Description ***
  **/
 @Repository
-public class UserRepository {
-    public ArrayList<User> getUserList() {
-        return new ArrayList<>();
-    }
+public interface UserRepository extends CrudRepository<UserEntity, Integer> {
+    public List<UserEntity> findAll();
 }

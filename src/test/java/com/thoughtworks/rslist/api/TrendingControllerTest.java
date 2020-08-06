@@ -1,6 +1,6 @@
 package com.thoughtworks.rslist.api;
-import com.thoughtworks.rslist.entity.Trending;
-import com.thoughtworks.rslist.entity.User;
+import com.thoughtworks.rslist.domain.Trending;
+import com.thoughtworks.rslist.domain.User;
 import com.thoughtworks.rslist.repository.TrendingRepository;
 import com.thoughtworks.rslist.service.TrendingService;
 import com.thoughtworks.rslist.service.UserService;

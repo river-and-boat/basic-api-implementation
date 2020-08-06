@@ -1,4 +1,4 @@
-package com.thoughtworks.rslist.entity;
+package com.thoughtworks.rslist.domain;
 
 public enum GenderEnum {
     MALE,

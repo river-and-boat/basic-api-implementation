@@ -1,8 +1,8 @@
 package com.thoughtworks.rslist.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thoughtworks.rslist.entity.GenderEnum;
-import com.thoughtworks.rslist.entity.User;
+import com.thoughtworks.rslist.domain.GenderEnum;
+import com.thoughtworks.rslist.domain.User;
 import com.thoughtworks.rslist.repository.UserRepository;
 import com.thoughtworks.rslist.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,7 +18,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.ArrayList;
 import java.util.stream.Collectors;
@@ -50,18 +49,18 @@ class UserControllerTest {
     @Autowired
     private UserController userController;
 
-    @BeforeEach
-    void init() {
-        when(userRepository.getUserList())
-                .thenReturn((ArrayList<User>)
-                        Stream.of(
-                                new User(1, "JYZ", 26, GenderEnum.MALE, "842714673@qq.com", "18883871607"),
-                                new User(2, "JYZ", 26, GenderEnum.MALE, "842714673@qq.com", "18883871607"),
-                                new User(3, "JYZ", 26, GenderEnum.MALE, "842714673@qq.com", "18883871607"),
-                                new User(4, "JYZ", 26, GenderEnum.MALE, "842714673@qq.com", "18883871607"),
-                                new User(5, "JYZ", 26, GenderEnum.MALE, "842714673@qq.com", "18883871607")
-                        ).collect(Collectors.toList()));
-    }
+//    @BeforeEach
+//    void init() {
+//        when(userRepository.getUserList())
+//                .thenReturn((ArrayList<User>)
+//                        Stream.of(
+//                                new User(1, "JYZ", 26, GenderEnum.MALE, "842714673@qq.com", "18883871607"),
+//                                new User(2, "JYZ", 26, GenderEnum.MALE, "842714673@qq.com", "18883871607"),
+//                                new User(3, "JYZ", 26, GenderEnum.MALE, "842714673@qq.com", "18883871607"),
+//                                new User(4, "JYZ", 26, GenderEnum.MALE, "842714673@qq.com", "18883871607"),
+//                                new User(5, "JYZ", 26, GenderEnum.MALE, "842714673@qq.com", "18883871607")
+//                        ).collect(Collectors.toList()));
+//    }
 
     @Test
     public void getUserByUserName() throws Exception {
@@ -74,13 +73,13 @@ class UserControllerTest {
     @Test
     public void addOneUserWithNormalCondition() throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
-        User newUser = new User(6, "newUser", 28, GenderEnum.FEMALE, "test@qq.com", "18883871607");
+        User newUser = new User(1, "newUser", 28, GenderEnum.FEMALE, "test@qq.com", "18883871607");
         mockMvc.perform(post("/users/")
                 .content(objectMapper.writeValueAsString(newUser))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
 
-        mockMvc.perform(get("/users/newUser"))
+        mockMvc.perform(get("/users/all"))
                 .andExpect(jsonPath("$.user_name", is("newUser")))
                 .andExpect(jsonPath("$.user_email", is("test@qq.com")))
                 .andExpect(status().isOk());

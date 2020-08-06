@@ -1,7 +1,7 @@
 package com.thoughtworks.rslist.service;
 
-import com.thoughtworks.rslist.entity.Trending;
-import com.thoughtworks.rslist.entity.User;
+import com.thoughtworks.rslist.domain.Trending;
+import com.thoughtworks.rslist.domain.User;
 import com.thoughtworks.rslist.exception.BadIndexParamException;
 import com.thoughtworks.rslist.exception.IndexOutException;
 import com.thoughtworks.rslist.repository.TrendingRepository;

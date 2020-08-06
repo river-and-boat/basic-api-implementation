@@ -1,9 +1,9 @@
 package com.thoughtworks.rslist.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thoughtworks.rslist.entity.GenderEnum;
-import com.thoughtworks.rslist.entity.Trending;
-import com.thoughtworks.rslist.entity.User;
+import com.thoughtworks.rslist.domain.GenderEnum;
+import com.thoughtworks.rslist.domain.Trending;
+import com.thoughtworks.rslist.domain.User;
 import com.thoughtworks.rslist.repository.TrendingRepository;
 import com.thoughtworks.rslist.service.TrendingService;
 import com.thoughtworks.rslist.service.UserService;
@@ -76,7 +76,7 @@ public class TrendingWithUserTest {
                 .thenReturn(new User(1, "JYZ", 26, GenderEnum.MALE, "842714673@qq.com", "18883871607"));
 
         when(userService.addNewUser(any()))
-                .thenReturn(Optional.of(new User(2, "admin", 26, GenderEnum.MALE, "hellocq@163.com", "15326147230")));
+                .thenReturn(1);
     }
 
     @Test

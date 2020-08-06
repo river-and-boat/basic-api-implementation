@@ -1,6 +1,7 @@
 package com.thoughtworks.rslist.api;
 
-import com.thoughtworks.rslist.entity.User;
+import com.thoughtworks.rslist.domain.User;
+import com.thoughtworks.rslist.entity.UserEntity;
 import com.thoughtworks.rslist.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,10 +23,6 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-//    public UserController(UserService userService) {
-//        this.userService = userService;
-//    }
-
     @GetMapping("/users/{userName}")
     public ResponseEntity<User> getUserByUserName(@PathVariable("userName") Optional<String> userName) {
         return ResponseEntity.ok(userService.getUserByUserNameService(userName));
@@ -33,11 +30,10 @@ public class UserController {
 
     @PostMapping("/users/")
     public ResponseEntity addNewUser(@RequestBody @Valid Optional<User> newUser) {
-        Optional<User> user = userService.addNewUser(newUser);
-        if (user.isPresent()) {
-            Integer id = user.get().getId();
+        Integer userId = userService.addNewUser(newUser);
+        if (userId > 0) {
             return ResponseEntity.status(HttpStatus.CREATED)
-                    .header("add",id.toString())
+                    .header("add",userId.toString())
                     .body(null);
         }
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);

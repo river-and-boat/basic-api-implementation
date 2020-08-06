@@ -1,7 +1,8 @@
-package com.thoughtworks.rslist.entity;
+package com.thoughtworks.rslist.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,16 +12,9 @@ import javax.validation.constraints.*;
  * @Auto Jiang Yuzhou
  * @Date 2020/8/5 11:34
  * @Description ***
- *       "user": {
- *         "userName": "xiaowang",
- *         "age": 19,
- *         "gender": "female",
- *         "email": "a@thoughtworks.com",
- *         "phone": 18888888888
- *       }
  **/
-
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
