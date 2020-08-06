@@ -4,14 +4,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.rslist.domain.GenderEnum;
 import com.thoughtworks.rslist.domain.User;
 import com.thoughtworks.rslist.entity.UserEntity;
-import com.thoughtworks.rslist.repository.TrendingRepository;
 import com.thoughtworks.rslist.repository.UserRepository;
 import com.thoughtworks.rslist.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -21,14 +19,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.ArrayList;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.List;
 
 import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -209,5 +204,23 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.user_name", is("JYZ")))
                 .andExpect(jsonPath("$.user_age", is(26)))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testDeleteUserFromMySqlById() throws Exception {
+        UserEntity userEntity = new UserEntity();
+        userEntity.setUserName("JYZ");
+        userEntity.setPhone("18883871607");
+        userEntity.setGenderEnum(GenderEnum.MALE);
+        userEntity.setEmail("hello@cq.com");
+        userEntity.setAge(26);
+        userRepository.save(userEntity);
+
+        mockMvc.perform(delete("/users/8"))
+                .andExpect(status().isOk());
+
+        List<UserEntity> userEntities = userRepository.findAll();
+
+        assertEquals(userEntities.size(),0);
     }
 }
