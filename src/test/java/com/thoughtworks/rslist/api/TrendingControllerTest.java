@@ -137,7 +137,7 @@ class TrendingControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
 
-        int latestTrendingId = trendingRepository.findAll().get(0).getId();
+        Integer latestTrendingId = trendingRepository.findAll().get(0).getId();
 
         mockMvc.perform(get("/trendings/" + latestTrendingId))
                 .andExpect(jsonPath("$.trendingName", is("Trend 6")))
@@ -150,7 +150,6 @@ class TrendingControllerTest {
 
     @Test
     public void testAddOneTrendingEvent() throws Exception {
-
         String trendingStr = "{\"id\":6, \"trendingName\":\"热搜事件6\"," +
                 " \"keyWord\":\"无分类\"," + "\"user\" :{\"id\":2, \"user_name\":\"Admin\", \"user_age\": 32," +
                 "\"user_gender\":\"MALE\", \"user_email\":\"hellocq@163.com\", \"user_phone\":\"15326147230\"}}";
@@ -168,23 +167,33 @@ class TrendingControllerTest {
     }
 
     @Test
-    public void testupdateOneTrendingEventWithKeyWord()
+    public void testPatchTrendingEventWhenTrendingIdMatchUserId()
             throws Exception {
+        UserEntity userEntity = new UserEntity();
+        userEntity.setAge(32);
+        userEntity.setUserName("Admin");
+        userEntity.setEmail("hellocq@163.com");
+        userEntity.setGenderEnum(GenderEnum.MALE);
+        userEntity.setPhone("15326147230");
+        userRepository.save(userEntity);
+        Integer latestUserId = userRepository.findAll().get(0).getId();
 
-        String updateTrendingStr = "{\"id\":3, \"trendingName\":\"热搜事件3\"," +
-                " \"keyWord\":\"国际新闻\"," + "\"user\" :{\"id\":2, \"userName\":\"Admin\", " +
-                "\"genderEnum\":\"MALE\", \"email\":\"hellocq@163.com\", \"phone\":\"15326147230\"}}";
-
-        mockMvc.perform(put("/trendings/exist")
-                .content(updateTrendingStr)
+        String trendingStr = "{\"trendingName\":\"Trend 6\", " +
+                "\"keyWord\":\"no\"," + "\"user\" :{\"id\":" + latestUserId + ", \"user_name\":\"Admin\", \"user_age\": 32," +
+                "\"user_gender\":\"MALE\", \"user_email\":\"hellocq@163.com\", \"user_phone\":\"15326147230\"}}";
+        mockMvc.perform(post("/trendings/newTrending")
+                .content(trendingStr)
                 .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(header().string("update", "3"))
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
+        Integer latestTrendingId = userRepository.findAll().get(0).getId();
 
-        mockMvc.perform(get("/trendings/" + 3))
-                .andExpect(jsonPath("$.trendingName", is("热搜事件3")))
-                .andExpect(jsonPath("$.keyWord", is("国际新闻")))
-                .andExpect(status().isOk());
+        String requestBody = "{\"trendingName\":\"new Event\"," +
+                " \"keyWord\":\"new key word\", \"userId\":1";
+
+        mockMvc.perform(put("/trendings/exist/" + latestTrendingId)
+                .content(requestBody)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
     }
 
     @Test

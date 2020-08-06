@@ -31,8 +31,6 @@ public class TrendingService {
     @Autowired
     private UserRepository userRepository;
 
-    private final static Integer NAN_TRENDING = -1;
-
     public Trending accessOneTrendingByIdService(Optional<Integer> id)
             throws Exception {
         if (id.isPresent()) {
@@ -76,21 +74,23 @@ public class TrendingService {
         throw new BadIndexParamException("invalid request param");
     }
 
-    public Trending updateExistTrending(Optional<Trending> newTrending)
+    public Trending updateExistTrending(Optional<Trending> newTrending, Optional<Integer> trendingId)
             throws BadIndexParamException {
-        if (newTrending.isPresent()) {
-            Trending trending_before = newTrending.get();
-            Optional<TrendingEntity> trendingEntity = trendingRepository.findById(trending_before.getId());
+        if (trendingId.isPresent()) {
+            Optional<TrendingEntity> trendingEntity = trendingRepository.findById(trendingId.get());
             if (trendingEntity.isPresent()) {
-                TrendingEntity trendingEntityBeingEdit = trendingEntity.get();
-                if (trending_before.getTrendingName() != null) {
-                    trendingEntityBeingEdit.setTrendingName(trending_before.getTrendingName());
+                if (trendingEntity.get().getUserId().compareTo(newTrending.get().getUserId()) == 0) {
+                    return new Trending();
                 }
-                if (trending_before.getKeyWord() != null) {
-                    trendingEntityBeingEdit.setKeyWord(trending_before.getKeyWord());
-                }
-                TrendingEntity saveTrending = trendingRepository.save(trendingEntityBeingEdit);
-                return ConvertTool.convertTrendingEntityToTrending(saveTrending);
+//                TrendingEntity trendingEntityBeingEdit = trendingEntity.get();
+//                if (trending_before.getTrendingName() != null) {
+//                    trendingEntityBeingEdit.setTrendingName(trending_before.getTrendingName());
+//                }
+//                if (trending_before.getKeyWord() != null) {
+//                    trendingEntityBeingEdit.setKeyWord(trending_before.getKeyWord());
+//                }
+//                TrendingEntity saveTrending = trendingRepository.save(trendingEntityBeingEdit);
+//                return ConvertTool.convertTrendingEntityToTrending(saveTrending);
             }
         }
         throw new BadIndexParamException("invalid request param");

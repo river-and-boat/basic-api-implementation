@@ -41,10 +41,11 @@ public class TrendingController {
                 .body(null);
     }
 
-    @PutMapping("/trendings/exist")
-    public ResponseEntity updateTrending(@RequestBody Optional<Trending> existTrending)
+    @PutMapping("/trendings/exist/{trendingId}")
+    public ResponseEntity updateTrending(@PathVariable Optional<Integer> trendingId,
+                                         @RequestBody Optional<Trending> existTrending)
             throws BadIndexParamException {
-        Trending trendingResult = trendingService.updateExistTrending(existTrending);
+        Trending trendingResult = trendingService.updateExistTrending(existTrending, trendingId);
         return ResponseEntity.status(HttpStatus.OK)
                 .header("update", trendingResult.getId().toString()).body(null);
     }
