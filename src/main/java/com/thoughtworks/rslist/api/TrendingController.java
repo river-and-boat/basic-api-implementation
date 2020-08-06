@@ -3,12 +3,16 @@ package com.thoughtworks.rslist.api;
 import com.thoughtworks.rslist.entity.Trending;
 import com.thoughtworks.rslist.exception.BadIndexParamException;
 import com.thoughtworks.rslist.exception.CommonErrorMessage;
+import com.thoughtworks.rslist.exception.TrendingBadParamException;
 import com.thoughtworks.rslist.service.TrendingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,7 +37,7 @@ public class TrendingController {
     }
 
     @PostMapping("/trendings/newTrending")
-    public ResponseEntity addNewTrending(@RequestBody Optional<Trending> newTrending) {
+    public ResponseEntity addNewTrending(@RequestBody @Validated Optional<Trending> newTrending) {
         Integer index = trendingService.addOrUpdateTrending(newTrending);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .header("add", index.toString())

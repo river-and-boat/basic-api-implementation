@@ -1,5 +1,6 @@
 package com.thoughtworks.rslist.api;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.rslist.entity.GenderEnum;
 import com.thoughtworks.rslist.entity.Trending;
 import com.thoughtworks.rslist.entity.User;
@@ -109,6 +110,19 @@ public class TrendingWithUserTest {
     public void testOneTrendingWithBadParam() throws Exception {
         mockMvc.perform(get("/trendings/100"))
                 .andExpect(jsonPath("$.error",is("invalid index")))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void testPostBadEventAndUser() throws Exception {
+        String trendingStr = "{\"id\":6, \"trendingName\":\"热搜事件6\"," +
+                " \"keyWord\":\"无分类\"," + "\"user\" :{\"id\":2, \"userName\":\"AdminJiangYuzhou\", " +
+                "\"age\": 14, \"genderEnum\":\"MALE\", \"email\":\"hellocq@163.com\", \"phone\":\"1532614723210\"}}";
+
+        mockMvc.perform(post("/trendings/newTrending")
+                .content(trendingStr)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.error",is("invalid param")))
                 .andExpect(status().isBadRequest());
     }
 }

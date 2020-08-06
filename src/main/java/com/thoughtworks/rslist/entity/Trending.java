@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.Valid;
+
 /**
  * @Auto Jiang Yuzhou
  * @Date 2020/8/4 20:17
@@ -36,6 +38,7 @@ public class Trending {
     }
 
     @JsonIgnore
+    @Valid
     public User getUser() {
         return user;
     }
