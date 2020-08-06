@@ -58,14 +58,16 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
-    public void deleteUserById(Optional<Integer> id)
-            throws MysqlOperatingException {
+    public Integer deleteUserById(Optional<Integer> id)
+            throws MysqlOperatingException, BadIndexParamException {
         try {
             if (id.isPresent()) {
                 userRepository.deleteById(id.get());
+                return id.get();
             }
         } catch (Exception ex) {
             throw new MysqlOperatingException("mysql deleting error");
         }
+        throw new BadIndexParamException("invalid request param");
     }
 }

@@ -36,7 +36,7 @@ public class UserController {
         Integer userId = userService.addNewUser(newUser);
         if (userId > 0) {
             return ResponseEntity.status(HttpStatus.CREATED)
-                    .header("add",userId.toString())
+                    .header("add", userId.toString())
                     .body(null);
         }
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
@@ -49,8 +49,10 @@ public class UserController {
 
     @DeleteMapping("/users/{id}")
     public ResponseEntity deleteUserById(@PathVariable("id") Optional<Integer> id)
-            throws MysqlOperatingException {
-        userService.deleteUserById(id);
-        return ResponseEntity.ok().body(null);
+            throws MysqlOperatingException, BadIndexParamException {
+        Integer index = userService.deleteUserById(id);
+        return ResponseEntity.ok()
+                .header("delete", index.toString())
+                .body(null);
     }
 }

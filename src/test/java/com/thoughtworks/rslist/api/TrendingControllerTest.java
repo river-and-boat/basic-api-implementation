@@ -126,10 +126,10 @@ class TrendingControllerTest {
 
         userRepository.save(userEntity);
 
-        int latestId = userRepository.findAll().get(0).getId();
+        int latestUserId = userRepository.findAll().get(0).getId();
 
         String trendingStr = "{\"trendingName\":\"Trend 6\", " +
-                "\"keyWord\":\"no\"," + "\"user\" :{\"id\":" + latestId + ", \"user_name\":\"Admin\", \"user_age\": 32," +
+                "\"keyWord\":\"no\"," + "\"user\" :{\"id\":" + latestUserId + ", \"user_name\":\"Admin\", \"user_age\": 32," +
                 "\"user_gender\":\"MALE\", \"user_email\":\"hellocq@163.com\", \"user_phone\":\"15326147230\"}}";
 
         mockMvc.perform(post("/trendings/newTrending")
@@ -145,7 +145,7 @@ class TrendingControllerTest {
                 .andExpect(jsonPath("$", not(hasKey("user"))))
                 .andExpect(status().isOk());
 
-        assertEquals(trendingRepository.findAll().size(), 1);
+        assertEquals(1, trendingRepository.findAll().size());
     }
 
     @Test

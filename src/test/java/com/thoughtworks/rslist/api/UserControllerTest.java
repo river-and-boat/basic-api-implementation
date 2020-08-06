@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.rslist.domain.GenderEnum;
 import com.thoughtworks.rslist.domain.User;
 import com.thoughtworks.rslist.entity.UserEntity;
+import com.thoughtworks.rslist.repository.TrendingRepository;
 import com.thoughtworks.rslist.repository.UserRepository;
 import com.thoughtworks.rslist.service.UserService;
 import org.aspectj.lang.annotation.After;
@@ -26,8 +27,7 @@ import java.util.List;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -48,9 +48,13 @@ class UserControllerTest {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private TrendingRepository trendingRepository;
+
     @AfterEach
     void cleanUp() {
         userRepository.deleteAll();
+        trendingRepository.deleteAll();
     }
 
     @Test
@@ -183,12 +187,12 @@ class UserControllerTest {
     public void getAllUsers() throws Exception {
         mockMvc.perform(get("/users/all"))
                 .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$",hasSize(5)))
-                .andExpect(jsonPath("$[0]",hasKey("user_name")))
-                .andExpect(jsonPath("$[0]",hasKey("user_age")))
-                .andExpect(jsonPath("$[0]",hasKey("user_gender")))
-                .andExpect(jsonPath("$[0]",hasKey("user_email")))
-                .andExpect(jsonPath("$[0]",hasKey("user_phone")))
+                .andExpect(jsonPath("$", hasSize(5)))
+                .andExpect(jsonPath("$[0]", hasKey("user_name")))
+                .andExpect(jsonPath("$[0]", hasKey("user_age")))
+                .andExpect(jsonPath("$[0]", hasKey("user_gender")))
+                .andExpect(jsonPath("$[0]", hasKey("user_email")))
+                .andExpect(jsonPath("$[0]", hasKey("user_phone")))
                 .andExpect(status().isOk());
     }
 
@@ -227,6 +231,35 @@ class UserControllerTest {
 
         List<UserEntity> userEntities = userRepository.findAll();
 
-        assertEquals(userEntities.size(),0);
+        assertEquals(userEntities.size(), 0);
+    }
+
+    @Test
+    public void testCascadingDeletionUserAndTrending() throws Exception {
+        UserEntity userEntity = new UserEntity();
+        userEntity.setAge(32);
+        userEntity.setUserName("Admin");
+        userEntity.setEmail("hellocq@163.com");
+        userEntity.setGenderEnum(GenderEnum.MALE);
+        userEntity.setPhone("15326147230");
+
+        userRepository.save(userEntity);
+
+        Integer latestUserId = userRepository.findAll().get(0).getId();
+
+        String trendingStr = "{\"trendingName\":\"Trend 6\", " +
+                "\"keyWord\":\"no\"," + "\"user\" :{\"id\":" + latestUserId + ", \"user_name\":\"Admin\", \"user_age\": 32," +
+                "\"user_gender\":\"MALE\", \"user_email\":\"hellocq@163.com\", \"user_phone\":\"15326147230\"}}";
+
+        mockMvc.perform(post("/trendings/newTrending")
+                .content(trendingStr)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated());
+
+        mockMvc.perform(delete("/users/" + latestUserId))
+                .andExpect(header().string("delete", latestUserId.toString()))
+                .andExpect(status().isOk());
+
+        assertEquals(0, trendingRepository.findAll().size());
     }
 }
