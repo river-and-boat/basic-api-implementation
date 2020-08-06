@@ -71,7 +71,7 @@ public class TrendingWithUserTest {
     public void testAddTrendingWithUserIntegrate() throws Exception {
 
         String trendingStr = "{\"id\":6, \"trendingName\":\"热搜事件6\"," +
-                " \"keyWord\":\"无分类\"," + "\"user\" :{\"id\":2, \"user_name\":\"admin\", " +
+                " \"keyWord\":\"无分类\"," + "\"user\" :{\"id\":2, \"user_name\":\"admin\", \"vote_num\":10, " +
                 "\"user_age\": 26, \"user_gender\":\"MALE\", \"user_email\":\"hellocq@163.com\", \"user_phone\":\"15326147230\"}}";
 
         mockMvc.perform(post("/trendings/newTrending")
@@ -103,7 +103,7 @@ public class TrendingWithUserTest {
     @Test
     public void testPostBadEventAndUser() throws Exception {
         String trendingStr = "{\"id\":6, \"trendingName\":\"热搜事件6\"," +
-                " \"keyWord\":\"无分类\"," + "\"user\" :{\"id\":2, \"user_name\":\"AdminJiangYuzhou\", " +
+                " \"keyWord\":\"无分类\"," + "\"user\" :{\"id\":2, \"user_name\":\"AdminJiangYuzhou\", \"vote_num\":10, " +
                 "\"user_age\": 14, \"user_gender\":\"MALE\", \"user_email\":\"hellocq@163.com\", \"user_phone\":\"1532614723210\"}}";
 
         mockMvc.perform(post("/trendings/newTrending")
@@ -116,7 +116,7 @@ public class TrendingWithUserTest {
     @Test
     public void testPostBadUser() throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
-        User newUser = new User(6, "JiangYuZhouTest", 12, GenderEnum.MALE, "test@qq.com", "18883871607");
+        User newUser = new User(6, "JiangYuZhouTest", 12, GenderEnum.MALE, "test@qq.com", "18883871607",10);
         mockMvc.perform(post("/users/")
                 .content(objectMapper.writeValueAsString(newUser))
                 .contentType(MediaType.APPLICATION_JSON))

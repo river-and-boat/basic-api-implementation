@@ -43,5 +43,9 @@ public class User {
     @Pattern(regexp = "^1[3456789]\\d{9}$")
     @JsonProperty("user_phone")
     private String phone;
+
+    @JsonProperty("vote_num")
+    @NotNull
+    private Integer voteNum;
 }
 

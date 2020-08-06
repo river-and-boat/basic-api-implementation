@@ -39,13 +39,6 @@ class UserControllerTest {
     private MockMvc mockMvc;
 
     @Autowired
-    @InjectMocks
-    private UserService userService;
-
-    @Autowired
-    private UserController userController;
-
-    @Autowired
     private UserRepository userRepository;
 
     @Autowired
@@ -54,7 +47,6 @@ class UserControllerTest {
     @AfterEach
     void cleanUp() {
         userRepository.deleteAll();
-        trendingRepository.deleteAll();
     }
 
     @Test
@@ -68,7 +60,7 @@ class UserControllerTest {
     @Test
     public void addOneUserWithNormalCondition() throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
-        User newUser = new User(1, "newUser", 28, GenderEnum.FEMALE, "test@qq.com", "18883871607");
+        User newUser = new User(1, "newUser", 28, GenderEnum.FEMALE, "test@qq.com", "18883871607", 10);
         mockMvc.perform(post("/users/")
                 .content(objectMapper.writeValueAsString(newUser))
                 .contentType(MediaType.APPLICATION_JSON))
@@ -83,7 +75,7 @@ class UserControllerTest {
     @Test
     public void addOneExistUserWithNormalCondition() throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
-        User newUser = new User(1, "JYZ", 26, GenderEnum.MALE, "test@qq.com", "18883871607");
+        User newUser = new User(1, "JYZ", 26, GenderEnum.MALE, "test@qq.com", "18883871607", 10);
         mockMvc.perform(post("/users/")
                 .content(objectMapper.writeValueAsString(newUser))
                 .contentType(MediaType.APPLICATION_JSON))
@@ -98,7 +90,7 @@ class UserControllerTest {
     @Test
     public void addOneUserWithNameLargerThan8() throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
-        User newUser = new User(6, "newUserTest", 28, GenderEnum.FEMALE, "test@qq.com", "18883871607");
+        User newUser = new User(6, "newUserTest", 28, GenderEnum.FEMALE, "test@qq.com", "18883871607", 10);
 
         mockMvc.perform(post("/users/")
                 .content(objectMapper.writeValueAsString(newUser))
@@ -109,7 +101,7 @@ class UserControllerTest {
     @Test
     public void addOneUserWithNameNull() throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
-        User newUser = new User(6, null, 28, GenderEnum.FEMALE, "test@qq.com", "18883871607");
+        User newUser = new User(6, null, 28, GenderEnum.FEMALE, "test@qq.com", "18883871607", 10);
 
         mockMvc.perform(post("/users/")
                 .content(objectMapper.writeValueAsString(newUser))
@@ -120,7 +112,7 @@ class UserControllerTest {
     @Test
     public void addOneUserWithGenderNull() throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
-        User newUser = new User(6, "newUser", 28, null, "test@qq.com", "18883871607");
+        User newUser = new User(6, "newUser", 28, null, "test@qq.com", "18883871607", 10);
 
         mockMvc.perform(post("/users/")
                 .content(objectMapper.writeValueAsString(newUser))
@@ -131,7 +123,7 @@ class UserControllerTest {
     @Test
     public void addOneUserWithAgeNotNull() throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
-        User newUser = new User(6, "newUser", null, GenderEnum.FEMALE, "test@qq.com", "18883871607");
+        User newUser = new User(6, "newUser", null, GenderEnum.FEMALE, "test@qq.com", "18883871607", 10);
 
         mockMvc.perform(post("/users/")
                 .content(objectMapper.writeValueAsString(newUser))
@@ -142,7 +134,7 @@ class UserControllerTest {
     @Test
     public void addOneUserWithAgeLargerThan100() throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
-        User newUser = new User(6, "newUser", 200, GenderEnum.FEMALE, "test@qq.com", "18883871607");
+        User newUser = new User(6, "newUser", 200, GenderEnum.FEMALE, "test@qq.com", "18883871607", 10);
 
         mockMvc.perform(post("/users/")
                 .content(objectMapper.writeValueAsString(newUser))
@@ -153,7 +145,7 @@ class UserControllerTest {
     @Test
     public void addOneUserWithAgeLessThan18() throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
-        User newUser = new User(6, "newUser", 12, GenderEnum.FEMALE, "test@qq.com", "18883871607");
+        User newUser = new User(6, "newUser", 12, GenderEnum.FEMALE, "test@qq.com", "18883871607", 10);
 
         mockMvc.perform(post("/users/")
                 .content(objectMapper.writeValueAsString(newUser))
@@ -164,7 +156,7 @@ class UserControllerTest {
     @Test
     public void addOneUserWithInvalidEmail() throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
-        User newUser = new User(6, "newUser", 26, GenderEnum.FEMALE, "test_qq.com", "18883871607");
+        User newUser = new User(6, "newUser", 26, GenderEnum.FEMALE, "test_qq.com", "18883871607", 10);
 
         mockMvc.perform(post("/users/")
                 .content(objectMapper.writeValueAsString(newUser))
@@ -175,7 +167,7 @@ class UserControllerTest {
     @Test
     public void addOneUserWithInvalidPhoneNumber() throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
-        User newUser = new User(6, "newUser", 26, GenderEnum.FEMALE, "test@qq.com", "389864578952");
+        User newUser = new User(6, "newUser", 26, GenderEnum.FEMALE, "test@qq.com", "389864578952", 10);
 
         mockMvc.perform(post("/users/")
                 .content(objectMapper.writeValueAsString(newUser))
@@ -204,11 +196,12 @@ class UserControllerTest {
         userEntity.setGenderEnum(GenderEnum.MALE);
         userEntity.setEmail("hello@cq.com");
         userEntity.setAge(26);
+        userEntity.setVoteNum(10);
         userRepository.save(userEntity);
 
-        int idToDelete = userRepository.findAll().get(0).getId();
+        int latestUserId = userRepository.findAll().get(0).getId();
 
-        mockMvc.perform(get("/users/" + idToDelete))
+        mockMvc.perform(get("/users/" + latestUserId))
                 .andExpect(jsonPath("$.user_name", is("JYZ")))
                 .andExpect(jsonPath("$.user_age", is(26)))
                 .andExpect(status().isOk());
@@ -241,6 +234,7 @@ class UserControllerTest {
         userEntity.setUserName("Admin");
         userEntity.setEmail("hellocq@163.com");
         userEntity.setGenderEnum(GenderEnum.MALE);
+        userEntity.setVoteNum(10);
         userEntity.setPhone("15326147230");
 
         userRepository.save(userEntity);
@@ -248,7 +242,7 @@ class UserControllerTest {
         Integer latestUserId = userRepository.findAll().get(0).getId();
 
         String trendingStr = "{\"trendingName\":\"Trend 6\", " +
-                "\"keyWord\":\"no\"," + "\"user\" :{\"id\":" + latestUserId + ", \"user_name\":\"Admin\", \"user_age\": 32," +
+                "\"keyWord\":\"no\"," + "\"user\" :{\"id\":" + latestUserId + ", \"user_name\":\"Admin\", \"user_age\": 32, \"vote_num\":10," +
                 "\"user_gender\":\"MALE\", \"user_email\":\"hellocq@163.com\", \"user_phone\":\"15326147230\"}}";
 
         mockMvc.perform(post("/trendings/newTrending")

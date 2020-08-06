@@ -18,6 +18,7 @@ public class ConvertTool {
                 .userName(userEntity.getUserName())
                 .age(userEntity.getAge())
                 .genderEnum(userEntity.getGenderEnum())
+                .voteNum(userEntity.getVoteNum())
                 .email(userEntity.getEmail())
                 .phone(userEntity.getPhone()).build();
     }
@@ -28,6 +29,7 @@ public class ConvertTool {
                 .userName(user.getUserName())
                 .age(user.getAge())
                 .genderEnum(user.getGenderEnum())
+                .voteNum(user.getVoteNum())
                 .email(user.getEmail())
                 .phone(user.getPhone()).build();
     }

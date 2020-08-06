@@ -6,35 +6,40 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.List;
+import java.time.LocalTime;
 
 /**
  * @Auto Jiang Yuzhou
- * @Date 2020/8/6 15:03
+ * @Date 2020/8/6 23:57
  * @Description ***
  **/
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "trending")
 @Builder
-public class TrendingEntity {
+@Table(name = "vote")
+public class VoteEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private String trendingName;
+    private LocalTime voteTime;
 
-    private String keyWord;
+    private Integer num;
 
     @Column(name = "user_id")
     private Integer userId;
+
+    @Column(name = "trending_id")
+    private Integer trendingId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", insertable = false, updatable = false)
     private UserEntity user;
 
-    @OneToMany(mappedBy = "trendingId", fetch = FetchType.LAZY)
-    private List<VoteEntity> vote;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "trending_id", insertable = false, updatable = false)
+    private TrendingEntity trendingEntity;
 }

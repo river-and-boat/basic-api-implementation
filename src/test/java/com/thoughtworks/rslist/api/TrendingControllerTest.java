@@ -103,7 +103,7 @@ class TrendingControllerTest {
     public void testAddOneTrendingEventWithNoLogonUser() throws Exception {
 
         String trendingStr = "{\"trendingName\":\"热搜事件6\"," +
-                " \"keyWord\":\"无分类\"," + "\"user\" :{\"user_name\":\"Admin\", \"user_age\": 32," +
+                " \"keyWord\":\"无分类\"," + "\"user\" :{\"user_name\":\"Admin\", \"user_age\": 32, \"vote_num\":10," +
                 "\"user_gender\":\"MALE\", \"user_email\":\"hellocq@163.com\", \"user_phone\":\"15326147230\"}}";
 
         mockMvc.perform(post("/trendings/newTrending")
@@ -123,13 +123,14 @@ class TrendingControllerTest {
         userEntity.setEmail("hellocq@163.com");
         userEntity.setGenderEnum(GenderEnum.MALE);
         userEntity.setPhone("15326147230");
+        userEntity.setVoteNum(10);
 
         userRepository.save(userEntity);
 
         int latestUserId = userRepository.findAll().get(0).getId();
 
         String trendingStr = "{\"trendingName\":\"Trend 6\", " +
-                "\"keyWord\":\"no\"," + "\"user\" :{\"id\":" + latestUserId + ", \"user_name\":\"Admin\", \"user_age\": 32," +
+                "\"keyWord\":\"no\"," + "\"user\" :{\"id\":" + latestUserId + ", \"user_name\":\"Admin\", \"user_age\": 32, \"vote_num\":10," +
                 "\"user_gender\":\"MALE\", \"user_email\":\"hellocq@163.com\", \"user_phone\":\"15326147230\"}}";
 
         mockMvc.perform(post("/trendings/newTrending")
@@ -151,7 +152,7 @@ class TrendingControllerTest {
     @Test
     public void testAddOneTrendingEvent() throws Exception {
         String trendingStr = "{\"id\":6, \"trendingName\":\"热搜事件6\"," +
-                " \"keyWord\":\"无分类\"," + "\"user\" :{\"id\":2, \"user_name\":\"Admin\", \"user_age\": 32," +
+                " \"keyWord\":\"无分类\"," + "\"user\" :{\"id\":2, \"user_name\":\"Admin\", \"user_age\": 32, \"vote_num\":10," +
                 "\"user_gender\":\"MALE\", \"user_email\":\"hellocq@163.com\", \"user_phone\":\"15326147230\"}}";
 
         mockMvc.perform(post("/trendings/newTrending")
@@ -179,7 +180,7 @@ class TrendingControllerTest {
         Integer latestUserId = userRepository.findAll().get(0).getId();
 
         String trendingStr = "{\"trendingName\":\"Trend 6\", " +
-                "\"keyWord\":\"no\"," + "\"user\" :{\"id\":" + latestUserId + ", \"user_name\":\"Admin\", \"user_age\": 32," +
+                "\"keyWord\":\"no\"," + "\"user\" :{\"id\":" + latestUserId + ", \"user_name\":\"Admin\", \"user_age\": 32, \"vote_num\":10," +
                 "\"user_gender\":\"MALE\", \"user_email\":\"hellocq@163.com\", \"user_phone\":\"15326147230\"}}";
         mockMvc.perform(post("/trendings/newTrending")
                 .content(trendingStr)
@@ -209,7 +210,7 @@ class TrendingControllerTest {
         Integer latestUserId = userRepository.findAll().get(0).getId();
 
         String trendingStr = "{\"trendingName\":\"Trend 6\", " +
-                "\"keyWord\":\"no\"," + "\"user\" :{\"id\":" + latestUserId + ", \"user_name\":\"Admin\", \"user_age\": 32," +
+                "\"keyWord\":\"no\"," + "\"user\" :{\"id\":" + latestUserId + ", \"user_name\":\"Admin\", \"user_age\": 32, \"vote_num\":10," +
                 "\"user_gender\":\"MALE\", \"user_email\":\"hellocq@163.com\", \"user_phone\":\"15326147230\"}}";
         mockMvc.perform(post("/trendings/newTrending")
                 .content(trendingStr)
@@ -239,7 +240,7 @@ class TrendingControllerTest {
         Integer latestUserId = userRepository.findAll().get(0).getId();
 
         String trendingStr = "{\"trendingName\":\"Trend 6\", " +
-                "\"keyWord\":\"no\"," + "\"user\" :{\"id\":" + latestUserId + ", \"user_name\":\"Admin\", \"user_age\": 32," +
+                "\"keyWord\":\"no\"," + "\"user\" :{\"id\":" + latestUserId + ", \"user_name\":\"Admin\", \"user_age\": 32, \"vote_num\":10," +
                 "\"user_gender\":\"MALE\", \"user_email\":\"hellocq@163.com\", \"user_phone\":\"15326147230\"}}";
         mockMvc.perform(post("/trendings/newTrending")
                 .content(trendingStr)
@@ -274,7 +275,7 @@ class TrendingControllerTest {
         Integer latestUserId = userRepository.findAll().get(0).getId();
 
         String trendingStr = "{\"trendingName\":\"Trend 6\", " +
-                "\"keyWord\":\"no\"," + "\"user\" :{\"id\":" + latestUserId + ", \"user_name\":\"Admin\", \"user_age\": 32," +
+                "\"keyWord\":\"no\"," + "\"user\" :{\"id\":" + latestUserId + ", \"user_name\":\"Admin\", \"user_age\": 32, \"vote_num\":10," +
                 "\"user_gender\":\"MALE\", \"user_email\":\"hellocq@163.com\", \"user_phone\":\"15326147230\"}}";
         mockMvc.perform(post("/trendings/newTrending")
                 .content(trendingStr)
@@ -309,7 +310,7 @@ class TrendingControllerTest {
         Integer latestUserId = userRepository.findAll().get(0).getId();
 
         String trendingStr = "{\"trendingName\":\"Trend 6\", " +
-                "\"keyWord\":\"no\"," + "\"user\" :{\"id\":" + latestUserId + ", \"user_name\":\"Admin\", \"user_age\": 32," +
+                "\"keyWord\":\"no\"," + "\"user\" :{\"id\":" + latestUserId + ", \"user_name\":\"Admin\", \"user_age\": 32, \"vote_num\":10," +
                 "\"user_gender\":\"MALE\", \"user_email\":\"hellocq@163.com\", \"user_phone\":\"15326147230\"}}";
         mockMvc.perform(post("/trendings/newTrending")
                 .content(trendingStr)

@@ -29,7 +29,11 @@ public class UserEntity {
     private GenderEnum genderEnum;
     private String email;
     private String phone;
+    private Integer voteNum;
 
     @OneToMany(mappedBy = "userId", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<TrendingEntity> trendings;
+
+    @OneToMany(mappedBy = "userId", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private List<VoteEntity> votes;
 }
