@@ -82,24 +82,15 @@ public class TrendingService {
                 TrendingEntity beforeEdition = trendingEntity.get();
                 Trending editionObject = newTrending.get();
                 if (beforeEdition.getUserId().compareTo(editionObject.getUserId()) == 0) {
-                    beforeEdition.setTrendingName(editionObject.getTrendingName());
-
                     if (editionObject.getKeyWord() != null) {
                         beforeEdition.setKeyWord(editionObject.getKeyWord());
                     }
-
-                    TrendingEntity afterEdition = trendingRepository.save(beforeEdition);
-                    return ConvertTool.convertTrendingEntityToTrending(afterEdition);
+                    if (editionObject.getTrendingName() != null) {
+                        beforeEdition.setTrendingName(editionObject.getTrendingName());
+                    }
+                    return ConvertTool
+                            .convertTrendingEntityToTrending(trendingRepository.save(beforeEdition));
                 }
-//                TrendingEntity trendingEntityBeingEdit = trendingEntity.get();
-//                if (trending_before.getTrendingName() != null) {
-//                    trendingEntityBeingEdit.setTrendingName(trending_before.getTrendingName());
-//                }
-//                if (trending_before.getKeyWord() != null) {
-//                    trendingEntityBeingEdit.setKeyWord(trending_before.getKeyWord());
-//                }
-//                TrendingEntity saveTrending = trendingRepository.save(trendingEntityBeingEdit);
-//                return ConvertTool.convertTrendingEntityToTrending(saveTrending);
             }
         }
         throw new BadIndexParamException("invalid request param");
