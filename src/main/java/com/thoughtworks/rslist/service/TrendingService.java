@@ -83,7 +83,11 @@ public class TrendingService {
                 Trending editionObject = newTrending.get();
                 if (beforeEdition.getUserId().compareTo(editionObject.getUserId()) == 0) {
                     beforeEdition.setTrendingName(editionObject.getTrendingName());
-                    beforeEdition.setKeyWord(editionObject.getKeyWord());
+
+                    if (editionObject.getKeyWord() != null) {
+                        beforeEdition.setKeyWord(editionObject.getKeyWord());
+                    }
+
                     TrendingEntity afterEdition = trendingRepository.save(beforeEdition);
                     return ConvertTool.convertTrendingEntityToTrending(afterEdition);
                 }
