@@ -20,7 +20,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -77,15 +76,15 @@ public class TrendingWithUserTest {
                 .thenReturn(new User(1, "JYZ", 26, GenderEnum.MALE, "842714673@qq.com", "18883871607"));
 
         when(userService.addNewUser(any()))
-                .thenReturn(Optional.of(new User(2, "Admin", 26, GenderEnum.MALE, "hellocq@163.com", "15326147230")));
+                .thenReturn(Optional.of(new User(2, "admin", 26, GenderEnum.MALE, "hellocq@163.com", "15326147230")));
     }
 
     @Test
     public void testAddTrendingWithUserIntegrate() throws Exception {
 
         String trendingStr = "{\"id\":6, \"trendingName\":\"热搜事件6\"," +
-                " \"keyWord\":\"无分类\"," + "\"user\" :{\"id\":2, \"userName\":\"Admin\", " +
-                "\"age\": 26, \"genderEnum\":\"MALE\", \"email\":\"hellocq@163.com\", \"phone\":\"15326147230\"}}";
+                " \"keyWord\":\"无分类\"," + "\"user\" :{\"id\":2, \"user_name\":\"admin\", " +
+                "\"user_age\": 26, \"user_gender\":\"MALE\", \"user_email\":\"hellocq@163.com\", \"user_phone\":\"15326147230\"}}";
 
         mockMvc.perform(post("/trendings/newTrending")
                 .content(trendingStr)
@@ -116,8 +115,8 @@ public class TrendingWithUserTest {
     @Test
     public void testPostBadEventAndUser() throws Exception {
         String trendingStr = "{\"id\":6, \"trendingName\":\"热搜事件6\"," +
-                " \"keyWord\":\"无分类\"," + "\"user\" :{\"id\":2, \"userName\":\"AdminJiangYuzhou\", " +
-                "\"age\": 14, \"genderEnum\":\"MALE\", \"email\":\"hellocq@163.com\", \"phone\":\"1532614723210\"}}";
+                " \"keyWord\":\"无分类\"," + "\"user\" :{\"id\":2, \"user_name\":\"AdminJiangYuzhou\", " +
+                "\"user_age\": 14, \"user_gender\":\"MALE\", \"user_email\":\"hellocq@163.com\", \"user_phone\":\"1532614723210\"}}";
 
         mockMvc.perform(post("/trendings/newTrending")
                 .content(trendingStr)

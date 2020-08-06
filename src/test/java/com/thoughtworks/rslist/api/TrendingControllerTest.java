@@ -108,8 +108,8 @@ class TrendingControllerTest {
     public void testAddOneTrendingEvent() throws Exception {
 
         String trendingStr = "{\"id\":6, \"trendingName\":\"热搜事件6\"," +
-                " \"keyWord\":\"无分类\"," + "\"user\" :{\"id\":2, \"userName\":\"Admin\", " +
-                "\"genderEnum\":\"MALE\", \"email\":\"hellocq@163.com\", \"phone\":\"15326147230\"}}";
+                " \"keyWord\":\"无分类\"," + "\"user\" :{\"id\":2, \"user_name\":\"Admin\", \"user_age\": 32," +
+                "\"user_gender\":\"MALE\", \"user_email\":\"hellocq@163.com\", \"user_phone\":\"15326147230\"}}";
 
         mockMvc.perform(post("/trendings/newTrending")
                 .content(trendingStr)
