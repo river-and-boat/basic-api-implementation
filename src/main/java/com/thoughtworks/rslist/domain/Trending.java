@@ -28,6 +28,8 @@ public class Trending {
 
     private User user;
 
+    private Integer userId;
+
     public void updateFields(Trending newTrending) {
         String newName = newTrending.getTrendingName();
         String newKeyWord = newTrending.getKeyWord();

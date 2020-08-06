@@ -1,6 +1,5 @@
 package com.thoughtworks.rslist.entity;
 
-import com.thoughtworks.rslist.domain.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -29,7 +28,7 @@ public class TrendingEntity {
     private String keyWord;
 
     @Column(name = "user_id")
-    private String userId;
+    private Integer userId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", insertable = false, updatable = false)

@@ -1,10 +1,14 @@
 package com.thoughtworks.rslist.api;
 
+import com.thoughtworks.rslist.domain.GenderEnum;
 import com.thoughtworks.rslist.domain.Trending;
 import com.thoughtworks.rslist.domain.User;
+import com.thoughtworks.rslist.entity.UserEntity;
 import com.thoughtworks.rslist.repository.TrendingRepository;
+import com.thoughtworks.rslist.repository.UserRepository;
 import com.thoughtworks.rslist.service.TrendingService;
 import com.thoughtworks.rslist.service.UserService;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,7 +43,13 @@ class TrendingControllerTest {
     private TrendingRepository trendingRepository;
 
     @Autowired
-    private TrendingController trendingController;
+    private UserRepository userRepository;
+
+    @AfterEach
+    public void cleanUp() {
+        userRepository.deleteAll();
+        trendingRepository.deleteAll();
+    }
 
     @Test
     public void testAccessOneTrending() throws Exception {
@@ -102,6 +112,40 @@ class TrendingControllerTest {
                 .andExpect(status().isBadRequest());
 
         assertEquals(trendingRepository.findAll().size(), 0);
+    }
+
+    @Test
+    public void testAddOneTrendingEventWithLogonUser() throws Exception {
+
+        UserEntity userEntity = new UserEntity();
+        userEntity.setAge(32);
+        userEntity.setUserName("Admin");
+        userEntity.setEmail("hellocq@163.com");
+        userEntity.setGenderEnum(GenderEnum.MALE);
+        userEntity.setPhone("15326147230");
+
+        userRepository.save(userEntity);
+
+        int latestId = userRepository.findAll().get(0).getId();
+
+        String trendingStr = "{\"trendingName\":\"Trend 6\", " +
+                "\"keyWord\":\"no\"," + "\"user\" :{\"id\":" + latestId + ", \"user_name\":\"Admin\", \"user_age\": 32," +
+                "\"user_gender\":\"MALE\", \"user_email\":\"hellocq@163.com\", \"user_phone\":\"15326147230\"}}";
+
+        mockMvc.perform(post("/trendings/newTrending")
+                .content(trendingStr)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated());
+
+        int latestTrendingId = trendingRepository.findAll().get(0).getId();
+
+        mockMvc.perform(get("/trendings/" + latestTrendingId))
+                .andExpect(jsonPath("$.trendingName", is("Trend 6")))
+                .andExpect(jsonPath("$.keyWord", is("no")))
+                .andExpect(jsonPath("$", not(hasKey("user"))))
+                .andExpect(status().isOk());
+
+        assertEquals(trendingRepository.findAll().size(), 1);
     }
 
     @Test

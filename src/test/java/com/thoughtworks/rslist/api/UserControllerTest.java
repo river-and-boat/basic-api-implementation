@@ -6,6 +6,8 @@ import com.thoughtworks.rslist.domain.User;
 import com.thoughtworks.rslist.entity.UserEntity;
 import com.thoughtworks.rslist.repository.UserRepository;
 import com.thoughtworks.rslist.service.UserService;
+import org.aspectj.lang.annotation.After;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -46,8 +48,8 @@ class UserControllerTest {
     @Autowired
     private UserRepository userRepository;
 
-    @BeforeEach
-    void init() {
+    @AfterEach
+    void cleanUp() {
         userRepository.deleteAll();
     }
 
@@ -200,7 +202,9 @@ class UserControllerTest {
         userEntity.setAge(26);
         userRepository.save(userEntity);
 
-        mockMvc.perform(get("/users/6"))
+        int idToDelete = userRepository.findAll().get(0).getId();
+
+        mockMvc.perform(get("/users/" + idToDelete))
                 .andExpect(jsonPath("$.user_name", is("JYZ")))
                 .andExpect(jsonPath("$.user_age", is(26)))
                 .andExpect(status().isOk());
@@ -216,7 +220,9 @@ class UserControllerTest {
         userEntity.setAge(26);
         userRepository.save(userEntity);
 
-        mockMvc.perform(delete("/users/8"))
+        int idToDelete = userRepository.findAll().get(0).getId();
+
+        mockMvc.perform(delete("/users/" + idToDelete))
                 .andExpect(status().isOk());
 
         List<UserEntity> userEntities = userRepository.findAll();

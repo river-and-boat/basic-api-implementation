@@ -24,6 +24,7 @@ public class ConvertTool {
 
     public static UserEntity convertUserToUserEntity(User user) {
         return UserEntity.builder()
+                .id(user.getId())
                 .userName(user.getUserName())
                 .age(user.getAge())
                 .genderEnum(user.getGenderEnum())
@@ -34,6 +35,7 @@ public class ConvertTool {
     public static Trending convertTrendingEntityToTrending(TrendingEntity trendingEntity) {
         return Trending.builder()
                 .id(trendingEntity.getId())
+                .userId(trendingEntity.getUserId())
                 .trendingName(trendingEntity.getTrendingName())
                 .keyWord(trendingEntity.getKeyWord())
                 .user(convertUserEntityToUser(trendingEntity.getUser()))
@@ -42,6 +44,8 @@ public class ConvertTool {
 
     public static TrendingEntity convertTrendingToTrendingEntity(Trending trending) {
         return TrendingEntity.builder()
+                .id(trending.getId())
+                .userId(trending.getUser().getId())
                 .trendingName(trending.getTrendingName())
                 .keyWord(trending.getKeyWord())
                 .user(convertUserToUserEntity(trending.getUser()))
