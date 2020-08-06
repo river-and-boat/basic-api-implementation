@@ -28,7 +28,10 @@ public class TrendingEntity {
 
     private String keyWord;
 
+    @Column(name = "user_id")
+    private String userId;
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "userId")
+    @JoinColumn(name = "user_id", insertable = false, updatable = false)
     private UserEntity user;
 }

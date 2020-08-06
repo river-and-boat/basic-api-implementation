@@ -30,6 +30,6 @@ public class UserEntity {
     private String email;
     private String phone;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
+    @OneToMany(mappedBy = "userId", fetch = FetchType.LAZY)
     private List<TrendingEntity> trendings;
 }

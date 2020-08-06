@@ -66,8 +66,9 @@ public class TrendingService {
         if (newTrending.isPresent()) {
             TrendingEntity trendingEntity = ConvertTool.convertTrendingToTrendingEntity(newTrending.get());
             UserEntity userEntity = trendingEntity.getUser();
-            if(userEntity != null && !userRepository.existsById(userEntity.getId())) {
-                userRepository.save(trendingEntity.getUser());
+            if (userEntity == null || userEntity.getId() == null
+                    || !userRepository.existsById(userEntity.getId())) {
+                throw new BadIndexParamException("invalid request param");
             }
             TrendingEntity saveEntity = trendingRepository.save(trendingEntity);
             return ConvertTool.convertTrendingEntityToTrending(saveEntity);

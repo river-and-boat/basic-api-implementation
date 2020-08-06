@@ -1,4 +1,5 @@
 package com.thoughtworks.rslist.api;
+
 import com.thoughtworks.rslist.domain.Trending;
 import com.thoughtworks.rslist.domain.User;
 import com.thoughtworks.rslist.repository.TrendingRepository;
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -32,17 +34,12 @@ class TrendingControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
-    @Mock
+
+    @Autowired
     private TrendingRepository trendingRepository;
-    @Mock
-    private UserService userService;
 
     @Autowired
     private TrendingController trendingController;
-
-    @Autowired
-    @InjectMocks
-    private TrendingService trendingService;
 
     @Test
     public void testAccessOneTrending() throws Exception {
@@ -73,7 +70,7 @@ class TrendingControllerTest {
     public void testAccessAllTrending() throws Exception {
         mockMvc.perform(get("/trendings/range?startId=1&endId=5"))
                 .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$",hasSize(5)))
+                .andExpect(jsonPath("$", hasSize(5)))
                 .andExpect(jsonPath("$[0].trendingName", is("热搜事件1")))
                 .andExpect(jsonPath("$[0].keyWord", is("无分类")))
                 .andExpect(jsonPath("$[0]", not(hasKey("user"))))
@@ -90,6 +87,21 @@ class TrendingControllerTest {
                 .andExpect(jsonPath("$[4].keyWord", is("无分类")))
                 .andExpect(jsonPath("$[4]", not(hasKey("user"))))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testAddOneTrendingEventWithNoLogonUser() throws Exception {
+
+        String trendingStr = "{\"trendingName\":\"热搜事件6\"," +
+                " \"keyWord\":\"无分类\"," + "\"user\" :{\"user_name\":\"Admin\", \"user_age\": 32," +
+                "\"user_gender\":\"MALE\", \"user_email\":\"hellocq@163.com\", \"user_phone\":\"15326147230\"}}";
+
+        mockMvc.perform(post("/trendings/newTrending")
+                .content(trendingStr)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+
+        assertEquals(trendingRepository.findAll().size(), 0);
     }
 
     @Test
