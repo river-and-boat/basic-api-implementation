@@ -44,18 +44,6 @@ class TrendingControllerTest {
     @InjectMocks
     private TrendingService trendingService;
 
-    @BeforeEach
-    void init() {
-        when(trendingRepository.getTrendingList())
-                .thenReturn((ArrayList<Trending>) Stream.of(
-                        new Trending(1, "热搜事件1", "无分类", new User()),
-                        new Trending(2, "热搜事件2", "无分类", new User()),
-                        new Trending(3, "热搜事件3", "无分类", new User()),
-                        new Trending(4, "热搜事件4", "无分类", new User()),
-                        new Trending(5, "热搜事件5", "无分类", new User())
-                ).collect(Collectors.toList()));
-    }
-
     @Test
     public void testAccessOneTrending() throws Exception {
         Integer accessingRSId = 1;

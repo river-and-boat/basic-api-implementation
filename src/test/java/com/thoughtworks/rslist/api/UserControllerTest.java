@@ -3,6 +3,8 @@ package com.thoughtworks.rslist.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.rslist.domain.GenderEnum;
 import com.thoughtworks.rslist.domain.User;
+import com.thoughtworks.rslist.entity.UserEntity;
+import com.thoughtworks.rslist.repository.TrendingRepository;
 import com.thoughtworks.rslist.repository.UserRepository;
 import com.thoughtworks.rslist.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,9 +41,6 @@ class UserControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @Mock
-    private UserRepository userRepository;
-
     @Autowired
     @InjectMocks
     private UserService userService;
@@ -49,18 +48,13 @@ class UserControllerTest {
     @Autowired
     private UserController userController;
 
-//    @BeforeEach
-//    void init() {
-//        when(userRepository.getUserList())
-//                .thenReturn((ArrayList<User>)
-//                        Stream.of(
-//                                new User(1, "JYZ", 26, GenderEnum.MALE, "842714673@qq.com", "18883871607"),
-//                                new User(2, "JYZ", 26, GenderEnum.MALE, "842714673@qq.com", "18883871607"),
-//                                new User(3, "JYZ", 26, GenderEnum.MALE, "842714673@qq.com", "18883871607"),
-//                                new User(4, "JYZ", 26, GenderEnum.MALE, "842714673@qq.com", "18883871607"),
-//                                new User(5, "JYZ", 26, GenderEnum.MALE, "842714673@qq.com", "18883871607")
-//                        ).collect(Collectors.toList()));
-//    }
+    @Autowired
+    private UserRepository userRepository;
+
+    @BeforeEach
+    void init() {
+        userRepository.deleteAll();
+    }
 
     @Test
     public void getUserByUserName() throws Exception {
@@ -198,6 +192,22 @@ class UserControllerTest {
                 .andExpect(jsonPath("$[0]",hasKey("user_gender")))
                 .andExpect(jsonPath("$[0]",hasKey("user_email")))
                 .andExpect(jsonPath("$[0]",hasKey("user_phone")))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testSelectUserFromMySqlById() throws Exception {
+        UserEntity userEntity = new UserEntity();
+        userEntity.setUserName("JYZ");
+        userEntity.setPhone("18883871607");
+        userEntity.setGenderEnum(GenderEnum.MALE);
+        userEntity.setEmail("hello@cq.com");
+        userEntity.setAge(26);
+        userRepository.save(userEntity);
+
+        mockMvc.perform(get("/users/6"))
+                .andExpect(jsonPath("$.user_name", is("JYZ")))
+                .andExpect(jsonPath("$.user_age", is(26)))
                 .andExpect(status().isOk());
     }
 }

@@ -1,9 +1,10 @@
 package com.thoughtworks.rslist.repository;
 
-import com.thoughtworks.rslist.domain.Trending;
+import com.thoughtworks.rslist.entity.TrendingEntity;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @Auto Jiang Yuzhou
@@ -11,8 +12,7 @@ import java.util.ArrayList;
  * @Description ***
  **/
 @Repository
-public class TrendingRepository {
-    public ArrayList<Trending> getTrendingList() {
-        return new ArrayList<>();
-    }
+public interface TrendingRepository extends CrudRepository<TrendingEntity, Integer> {
+    List<TrendingEntity> findAll();
+    List<TrendingEntity> findByIdBetween(Integer startId, Integer endId);
 }

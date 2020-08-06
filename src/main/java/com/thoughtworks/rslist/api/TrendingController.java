@@ -33,22 +33,25 @@ public class TrendingController {
     }
 
     @PostMapping("/trendings/newTrending")
-    public ResponseEntity addNewTrending(@RequestBody @Validated Optional<Trending> newTrending) {
-        Integer index = trendingService.addOrUpdateTrending(newTrending);
+    public ResponseEntity addNewTrending(@RequestBody @Validated Optional<Trending> newTrending)
+            throws BadIndexParamException {
+        Trending trendingResult = trendingService.addNewTrending(newTrending);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .header("add", index.toString())
+                .header("add", trendingResult.getId().toString())
                 .body(null);
     }
 
     @PutMapping("/trendings/exist")
-    public ResponseEntity updateTrending(@RequestBody Optional<Trending> existTrending) {
-        Integer index = trendingService.addOrUpdateTrending(existTrending);
+    public ResponseEntity updateTrending(@RequestBody Optional<Trending> existTrending)
+            throws BadIndexParamException {
+        Trending trendingResult = trendingService.updateExistTrending(existTrending);
         return ResponseEntity.status(HttpStatus.OK)
-                .header("update", index.toString()).body(null);
+                .header("update", trendingResult.getId().toString()).body(null);
     }
 
     @DeleteMapping("/trendings/{id}")
-    public ResponseEntity deleteOneTrending(@PathVariable("id") Optional<Integer> id) {
+    public ResponseEntity deleteOneTrending(@PathVariable("id") Optional<Integer> id)
+            throws BadIndexParamException {
         Integer index = trendingService.deleteTrendingById(id);
         return ResponseEntity.status(HttpStatus.OK)
                 .header("delete", index.toString()).body(null);

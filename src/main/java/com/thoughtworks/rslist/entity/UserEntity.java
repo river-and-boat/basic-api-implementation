@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
 
 /**
  * @Auto Jiang Yuzhou
@@ -21,16 +22,14 @@ import javax.persistence.*;
 @Table(name = "user")
 public class UserEntity {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
-    @Column(name = "name")
     private String userName;
-
     private Integer age;
-
-    @Column(name = "gender")
     private GenderEnum genderEnum;
     private String email;
     private String phone;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
+    private List<TrendingEntity> trendings;
 }

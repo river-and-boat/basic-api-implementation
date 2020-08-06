@@ -2,6 +2,7 @@ package com.thoughtworks.rslist.api;
 
 import com.thoughtworks.rslist.domain.User;
 import com.thoughtworks.rslist.entity.UserEntity;
+import com.thoughtworks.rslist.exception.BadIndexParamException;
 import com.thoughtworks.rslist.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,9 +24,10 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @GetMapping("/users/{userName}")
-    public ResponseEntity<User> getUserByUserName(@PathVariable("userName") Optional<String> userName) {
-        return ResponseEntity.ok(userService.getUserByUserNameService(userName));
+    @GetMapping("/users/{id}")
+    public ResponseEntity<User> getUserByUserName(@PathVariable("id") Optional<Integer> id)
+            throws BadIndexParamException {
+        return ResponseEntity.ok(userService.getUserByUserId(id));
     }
 
     @PostMapping("/users/")

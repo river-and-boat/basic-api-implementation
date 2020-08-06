@@ -1,6 +1,8 @@
 package com.thoughtworks.rslist.tool;
 
+import com.thoughtworks.rslist.domain.Trending;
 import com.thoughtworks.rslist.domain.User;
+import com.thoughtworks.rslist.entity.TrendingEntity;
 import com.thoughtworks.rslist.entity.UserEntity;
 
 /**
@@ -27,5 +29,22 @@ public class ConvertTool {
                 .genderEnum(user.getGenderEnum())
                 .email(user.getEmail())
                 .phone(user.getPhone()).build();
+    }
+
+    public static Trending convertTrendingEntityToTrending(TrendingEntity trendingEntity) {
+        return Trending.builder()
+                .id(trendingEntity.getId())
+                .trendingName(trendingEntity.getTrendingName())
+                .keyWord(trendingEntity.getKeyWord())
+                .user(convertUserEntityToUser(trendingEntity.getUser()))
+                .build();
+    }
+
+    public static TrendingEntity convertTrendingToTrendingEntity(Trending trending) {
+        return TrendingEntity.builder()
+                .trendingName(trending.getTrendingName())
+                .keyWord(trending.getKeyWord())
+                .user(convertUserToUserEntity(trending.getUser()))
+                .build();
     }
 }

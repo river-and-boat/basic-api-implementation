@@ -2,6 +2,7 @@ package com.thoughtworks.rslist.service;
 
 import com.thoughtworks.rslist.domain.User;
 import com.thoughtworks.rslist.entity.UserEntity;
+import com.thoughtworks.rslist.exception.BadIndexParamException;
 import com.thoughtworks.rslist.repository.UserRepository;
 import com.thoughtworks.rslist.tool.ConvertTool;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,14 +26,15 @@ public class UserService {
 
     private final static Integer NAN_USER = -1;
 
-    public User getUserByUserNameService(Optional<String> userName) {
-//        if(userName.isPresent()) {
-//            return userRepository.getUserList().stream()
-//                    .filter(user -> user.getUserName().equals(userName.get()))
-//                    .findFirst()
-//                    .orElse(null);
-//        }
-        return null;
+    public User getUserByUserId(Optional<Integer> id)
+            throws BadIndexParamException {
+        if(id.isPresent()) {
+            Optional<UserEntity> userResult = userRepository.findById(id.get());
+            if (userResult.isPresent()) {
+                return ConvertTool.convertUserEntityToUser(userResult.get()) ;
+            }
+        }
+        throw new BadIndexParamException("invalid request param");
     }
 
     public Integer addNewUser(Optional<User> newUser) {
