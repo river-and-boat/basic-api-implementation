@@ -90,6 +90,7 @@ class VoteControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
+    // 需要再测试时间格式的Json字符串的获取
     @Test
     public void testVoteTrendingEventWhenVoteNumLessThanOrEqualToRemaining()
             throws Exception {
