@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -25,7 +27,7 @@ public class VoteController {
     }
 
     @PostMapping("/trending/{trendingId}/vote")
-    public ResponseEntity voteATrending(@PathVariable("trendingId")Optional<Integer> trendingId,
+    public ResponseEntity voteATrending(@PathVariable("trendingId") Optional<Integer> trendingId,
                                         @RequestBody Optional<Vote> vote)
             throws BadIndexParamException, VotingEventException {
         Vote voteResult = voteService.voteATrending(trendingId, vote);
@@ -34,5 +36,14 @@ public class VoteController {
                     .header("add", voteResult.getId().toString()).body(null);
         }
         return ResponseEntity.badRequest().body(null);
+    }
+
+    @GetMapping("/trendings")
+    public ResponseEntity<List<Vote>> getVoteEventsByTimeZones(@RequestParam("startTime") Optional<String> startTime,
+                                                               @RequestParam("endTime") Optional<String> endTime)
+            throws BadIndexParamException {
+
+        List<Vote> votes = voteService.getVotesBetweenTimeSpan(startTime, endTime);
+        return ResponseEntity.ok(votes);
     }
 }
