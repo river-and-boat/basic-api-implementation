@@ -1,10 +1,9 @@
-package com.thoughtworks.rslist.api;
+package com.thoughtworks.rslist.api.integration;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.rslist.domain.GenderEnum;
+import com.thoughtworks.rslist.domain.Vote;
 import com.thoughtworks.rslist.entity.UserEntity;
-import com.thoughtworks.rslist.entity.VoteEntity;
 import com.thoughtworks.rslist.repository.TrendingRepository;
 import com.thoughtworks.rslist.repository.UserRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -19,9 +18,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -41,11 +44,54 @@ class VoteControllerTest {
 
     @AfterEach
     void cleanUp() {
-        userRepository.deleteAll();
+        //userRepository.deleteAll();
     }
 
     @Test
     public void testVoteTrendingEventWhenVoteNumLargerThanRemaining()
+            throws Exception {
+        DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+        UserEntity userEntity = new UserEntity();
+        userEntity.setUserName("JYZ");
+        userEntity.setPhone("18883871607");
+        userEntity.setGenderEnum(GenderEnum.MALE);
+        userEntity.setEmail("hello@cq.com");
+        userEntity.setAge(26);
+        userEntity.setVoteNum(10);
+        userRepository.save(userEntity);
+
+        Integer latestUserId = userRepository.findAll().get(0).getId();
+
+        String trendingStr = "{\"trendingName\":\"Trend 6\", " +
+                "\"keyWord\":\"no\"," + "\"user\" :{\"id\":" + latestUserId + ", \"user_name\":\"Admin\", \"user_age\": 32, \"vote_num\":10, " +
+                "\"user_gender\":\"MALE\", \"user_email\":\"hellocq@163.com\", \"user_phone\":\"15326147230\"}}";
+        mockMvc.perform(post("/trendings/newTrending")
+                .content(trendingStr)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated());
+
+        Integer latestTrendingId = trendingRepository.findAll().get(0).getId();
+
+        String voteTime = "2020-08-07 21:51:22";
+
+        Vote vote = new Vote();
+        vote.setNum(15);
+        vote.setTrendingId(latestTrendingId);
+        vote.setUserId(latestUserId);
+        //vote.setVoteTime(LocalDateTime.parse(voteTime, df));
+
+        ObjectMapper objectMapper = new ObjectMapper();
+
+
+        mockMvc.perform(post("/trending/" + latestTrendingId + "/vote")
+                .content(objectMapper.writeValueAsString(vote))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void testVoteTrendingEventWhenVoteNumLessThanOrEqualToRemaining()
             throws Exception {
         UserEntity userEntity = new UserEntity();
         userEntity.setUserName("JYZ");
@@ -68,16 +114,20 @@ class VoteControllerTest {
 
         Integer latestTrendingId = trendingRepository.findAll().get(0).getId();
 
-        VoteEntity voteEntity = new VoteEntity();
-        voteEntity.setNum(15);
-        voteEntity.setUserId(latestUserId);
-        voteEntity.setVoteTime(LocalTime.now());
+        Vote vote = new Vote();
+        vote.setNum(8);
+        vote.setUserId(latestUserId);
+        //vote.setVoteTime(LocalDateTime.now());
 
         ObjectMapper objectMapper = new ObjectMapper();
 
-        mockMvc.perform(post("/trending/vote/" + latestTrendingId)
-                .content(objectMapper.writeValueAsString(voteEntity))
+        mockMvc.perform(post("/trending/" + latestTrendingId + "/vote")
+                .content(objectMapper.writeValueAsString(vote))
                 .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isCreated())
+                .andExpect(header().string("add","1"));
+
+        assertEquals(2, userRepository.findById(latestUserId).get().getVoteNum());
+        assertEquals(8, trendingRepository.findById(latestTrendingId).get().getTotalVotes());
     }
 }

@@ -3,6 +3,7 @@ package com.thoughtworks.rslist.handler;
 import com.thoughtworks.rslist.exception.BadIndexParamException;
 import com.thoughtworks.rslist.exception.CommonErrorMessage;
 import com.thoughtworks.rslist.exception.IndexOutException;
+import com.thoughtworks.rslist.exception.VotingEventException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +21,7 @@ public class MyExceptionHandler {
 
     Logger logger = LoggerFactory.getLogger(MyExceptionHandler.class);
 
-    @ExceptionHandler({BadIndexParamException.class, IndexOutException.class, MethodArgumentNotValidException.class})
+    @ExceptionHandler({BadIndexParamException.class, IndexOutException.class, MethodArgumentNotValidException.class, VotingEventException.class})
     public ResponseEntity exceptionHandler(Exception ex) {
         CommonErrorMessage commonErrorMessage = new CommonErrorMessage();
         if (ex.toString().contains("TrendingController.addNewTrending")) {

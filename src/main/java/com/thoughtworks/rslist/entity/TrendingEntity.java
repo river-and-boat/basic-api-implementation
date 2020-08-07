@@ -28,6 +28,15 @@ public class TrendingEntity {
 
     private String keyWord;
 
+    @Builder.Default
+    private Long totalVotes = 0L;
+
+    @Builder.Default
+    private Double purchasePrice = 0D;
+
+    @Builder.Default
+    private Integer purchaseDegree = 0;
+
     @Column(name = "user_id")
     private Integer userId;
 

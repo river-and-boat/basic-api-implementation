@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 
 /**
  * @Auto Jiang Yuzhou
@@ -24,7 +24,7 @@ public class Vote {
 
     private Integer trendingId;
 
-    private LocalTime voteTime;
+    private LocalDateTime voteTime;
 
     private Integer num;
 }

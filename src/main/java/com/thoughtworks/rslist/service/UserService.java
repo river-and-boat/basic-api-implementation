@@ -8,6 +8,7 @@ import com.thoughtworks.rslist.repository.UserRepository;
 import com.thoughtworks.rslist.tool.ConvertTool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,10 +23,13 @@ import java.util.stream.Collectors;
 @Service
 public class UserService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
     private final static Integer NAN_USER = -1;
+
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     public User getUserByUserId(Optional<Integer> id)
             throws BadIndexParamException {

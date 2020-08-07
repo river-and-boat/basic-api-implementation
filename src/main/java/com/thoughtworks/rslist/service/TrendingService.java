@@ -25,11 +25,15 @@ import java.util.stream.Collectors;
 @Service
 public class TrendingService {
 
-    @Autowired
-    private TrendingRepository trendingRepository;
+    private final TrendingRepository trendingRepository;
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+
+    public TrendingService(TrendingRepository trendingRepository,
+                           UserRepository userRepository) {
+        this.trendingRepository = trendingRepository;
+        this.userRepository = userRepository;
+    }
 
     public Trending accessOneTrendingByIdService(Optional<Integer> id)
             throws Exception {

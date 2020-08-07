@@ -2,8 +2,10 @@ package com.thoughtworks.rslist.tool;
 
 import com.thoughtworks.rslist.domain.Trending;
 import com.thoughtworks.rslist.domain.User;
+import com.thoughtworks.rslist.domain.Vote;
 import com.thoughtworks.rslist.entity.TrendingEntity;
 import com.thoughtworks.rslist.entity.UserEntity;
+import com.thoughtworks.rslist.entity.VoteEntity;
 
 /**
  * @Auto Jiang Yuzhou
@@ -40,6 +42,9 @@ public class ConvertTool {
                 .userId(trendingEntity.getUserId())
                 .trendingName(trendingEntity.getTrendingName())
                 .keyWord(trendingEntity.getKeyWord())
+                .purchaseDegree(trendingEntity.getPurchaseDegree())
+                .purchasePrice(trendingEntity.getPurchasePrice())
+                .totalVotes(trendingEntity.getTotalVotes())
                 .user(convertUserEntityToUser(trendingEntity.getUser()))
                 .build();
     }
@@ -50,7 +55,30 @@ public class ConvertTool {
                 .userId(trending.getUser().getId())
                 .trendingName(trending.getTrendingName())
                 .keyWord(trending.getKeyWord())
+                .purchaseDegree(trending.getPurchaseDegree())
+                .purchasePrice(trending.getPurchasePrice())
+                .totalVotes(trending.getTotalVotes())
                 .user(convertUserToUserEntity(trending.getUser()))
+                .build();
+    }
+
+    public static VoteEntity convertVoteToVoteEntity(Vote vote) {
+        return VoteEntity.builder()
+                .id(vote.getId())
+                .num(vote.getNum())
+                .trendingId(vote.getTrendingId())
+                .userId(vote.getUserId())
+                .voteTime(vote.getVoteTime())
+                .build();
+    }
+
+    public static Vote convertVoteEntityToVote(VoteEntity voteEntity) {
+        return Vote.builder()
+                .id(voteEntity.getId())
+                .num(voteEntity.getNum())
+                .trendingId(voteEntity.getTrendingId())
+                .userId(voteEntity.getUserId())
+                .voteTime(voteEntity.getVoteTime())
                 .build();
     }
 }

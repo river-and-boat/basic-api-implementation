@@ -22,8 +22,11 @@ import java.util.Optional;
 @RestController
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @GetMapping("/users/{id}")
     public ResponseEntity<User> getUserByUserName(@PathVariable("id") Optional<Integer> id)

@@ -15,8 +15,11 @@ import java.util.Optional;
 @RestController
 public class TrendingController {
 
-    @Autowired
-    private TrendingService trendingService;
+    private final TrendingService trendingService;
+
+    public TrendingController(TrendingService trendingService) {
+        this.trendingService = trendingService;
+    }
 
     @GetMapping("/trendings/{id}")
     public ResponseEntity<Trending> accessOneTrendingById(@PathVariable("id") Optional<Integer> id)

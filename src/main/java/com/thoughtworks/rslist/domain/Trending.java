@@ -30,16 +30,14 @@ public class Trending {
 
     private Integer userId;
 
-    public void updateFields(Trending newTrending) {
-        String newName = newTrending.getTrendingName();
-        String newKeyWord = newTrending.getKeyWord();
-        if (newName != null) {
-            this.trendingName = newName;
-        }
-        if (newKeyWord != null) {
-            this.keyWord = newKeyWord;
-        }
-    }
+    @Builder.Default
+    private Long totalVotes = 0L;
+
+    @Builder.Default
+    private Double purchasePrice = 0D;
+
+    @Builder.Default
+    private Integer purchaseDegree = 0;
 
     @JsonIgnore
     @Valid
