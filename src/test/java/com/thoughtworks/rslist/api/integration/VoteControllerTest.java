@@ -356,4 +356,43 @@ class VoteControllerTest {
                 .andExpect(jsonPath("$[3].id", is(8)));
 
     }
+
+    @Test
+    public void testVoteEventsByUserIdAndEventIdWithPageIndexOrPageSizeIllegal()
+            throws Exception {
+        Integer countDatas = 10;
+
+        DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+        String voteTime = "";
+
+        UserEntity userEntity = UserEntity.builder()
+                .phone("18883871607").email("842714673@qq.com").genderEnum(GenderEnum.MALE)
+                .age(26).userName("JYZ").voteNum(100).build();
+        userRepository.save(userEntity);
+
+        TrendingEntity trendingEntity = TrendingEntity.builder()
+                .trendingName("Test").keyWord("Test").purchaseDegree(5)
+                .purchasePrice(2D).totalVotes(10L).userId(1).build();
+        trendingRepository.save(trendingEntity);
+
+        for (int i = 1; i < countDatas; i++) {
+            voteTime = "200" + i + "-08-07 21:51:22";
+            VoteEntity voteEntity = VoteEntity.builder()
+                    .num(i).trendingId(1).userId(1)
+                    .voteTime(LocalDateTime.parse(voteTime, df)).build();
+            voteRepository.save(voteEntity);
+        }
+
+        Integer pageSize = -1;
+        Integer pageIndex = 1;
+
+        mockMvc.perform(get("/pageable/voteRecords")
+                .param("userId", String.valueOf(1))
+                .param("trendingId", String.valueOf(1))
+                .param("pageIndex", String.valueOf(pageIndex))
+                .param("pageSize", String.valueOf(pageSize)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error", is("invalid request param")));
+    }
 }

@@ -118,6 +118,10 @@ public class VoteService {
             pageItem = pageSize.get();
         }
 
+        if (pageId.compareTo(0) < 0 || pageItem.compareTo(0) < 0) {
+            throw new BadIndexParamException("invalid request param");
+        }
+
         if (userId.isPresent() && trendingId.isPresent()) {
             Integer uId = userId.get();
             Integer tId = trendingId.get();

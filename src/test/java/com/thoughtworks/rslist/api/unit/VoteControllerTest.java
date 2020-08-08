@@ -6,4 +6,5 @@ package com.thoughtworks.rslist.api.unit;
  * @Description ***
  **/
 public class VoteControllerTest {
+
 }
