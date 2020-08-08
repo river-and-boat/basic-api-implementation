@@ -6,7 +6,11 @@ import com.thoughtworks.rslist.exception.VotingEventException;
 import com.thoughtworks.rslist.service.VoteService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,9 +41,13 @@ public class VoteController {
     }
 
     @GetMapping("/time/voteEvents")
-    public ResponseEntity<List<Vote>> getVoteEventsByTimeZones(@RequestParam("startTime") Optional<String> startTime,
-                                                               @RequestParam("endTime") Optional<String> endTime)
+    public ResponseEntity<List<Vote>> getVoteEventsByTimeZones(@RequestParam("startTime") @Valid Optional<LocalDateTime> startTime,
+                                                               @RequestParam("endTime") @Valid Optional<LocalDateTime> endTime,
+                                                               BindingResult bindingResult)
             throws BadIndexParamException {
+        if (bindingResult.hasErrors()) {
+            throw new BadIndexParamException("The datetime is bad format");
+        }
         List<Vote> votes = voteService.getVotesBetweenTimeSpan(startTime, endTime);
         return ResponseEntity.ok(votes);
     }

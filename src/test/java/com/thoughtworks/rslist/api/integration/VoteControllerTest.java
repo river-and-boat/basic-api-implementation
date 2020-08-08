@@ -1,6 +1,5 @@
 package com.thoughtworks.rslist.api.integration;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.rslist.domain.GenderEnum;
 import com.thoughtworks.rslist.domain.Vote;
@@ -111,7 +110,7 @@ class VoteControllerTest {
         userEntity.setGenderEnum(GenderEnum.MALE);
         userEntity.setEmail("hello@cq.com");
         userEntity.setAge(26);
-        userEntity.setVoteNum(10);
+        //userEntity.setVoteNum(10);
         userRepository.save(userEntity);
 
         Integer latestUserId = userRepository.findAll().get(0).getId();
@@ -130,7 +129,7 @@ class VoteControllerTest {
         Vote vote = new Vote();
         vote.setNum(8);
         vote.setUserId(latestUserId);
-        //vote.setVoteTime(LocalDateTime.parse(voteTime, df));
+        vote.setVoteTime(LocalDateTime.parse(voteTime, df));
 
         ObjectMapper objectMapper = new ObjectMapper();
 
@@ -393,9 +392,7 @@ class VoteControllerTest {
     public void testVoteEventsByUserIdAndEventIdWithPageIndexOrPageSizeIllegal()
             throws Exception {
         Integer countDatas = 10;
-
         DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
         String voteTime = "";
 
         UserEntity userEntity = UserEntity.builder()
