@@ -10,6 +10,8 @@ import com.thoughtworks.rslist.repository.TrendingRepository;
 import com.thoughtworks.rslist.repository.UserRepository;
 import com.thoughtworks.rslist.repository.VoteRepository;
 import com.thoughtworks.rslist.tool.ConvertTool;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -20,7 +22,6 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * @Auto Jiang Yuzhou
@@ -37,6 +38,10 @@ public class VoteService {
     private final TrendingRepository trendingRepository;
 
     private static final DateTimeFormatter DF = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+    private final static Integer DEFAULT_PAGE_INDEX = 0;
+
+    private final static Integer DEFAULT_PAGE_SIZE = 5;
 
     public VoteService(UserRepository userRepository,
                        VoteRepository voteRepository,
@@ -101,6 +106,29 @@ public class VoteService {
                     .collect(Collectors.toList());
         }
         throw new BadIndexParamException("invalid request param");
+    }
+
+    public List<Vote> getVotesWithPageable(Optional<Integer> userId, Optional<Integer> trendingId,
+                                           Optional<Integer> pageIndex, Optional<Integer> pageSize)
+            throws BadIndexParamException {
+        Integer pageId = DEFAULT_PAGE_INDEX;
+        Integer pageItem = DEFAULT_PAGE_SIZE;
+        if (pageIndex.isPresent() && pageSize.isPresent()) {
+            pageId = pageIndex.get() - 1;
+            pageItem = pageSize.get();
+        }
+
+        if (userId.isPresent() && trendingId.isPresent()) {
+            Integer uId = userId.get();
+            Integer tId = trendingId.get();
+            Pageable pageable = PageRequest.of(pageId, pageItem);
+            List<VoteEntity> voteEntities = voteRepository
+                    .getVoteEntitiesByUserIdAndTrendingId(uId, tId, pageable);
+            return voteEntities.stream()
+                    .map(v -> ConvertTool.convertVoteEntityToVote(v))
+                    .collect(Collectors.toList());
+        }
+        throw new BadIndexParamException("userId or trendingId can not be null");
     }
 
     private boolean isDateFormat(String dateFormatStr) {

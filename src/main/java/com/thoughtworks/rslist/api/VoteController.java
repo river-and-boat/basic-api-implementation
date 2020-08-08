@@ -7,8 +7,6 @@ import com.thoughtworks.rslist.service.VoteService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,11 +36,21 @@ public class VoteController {
         return ResponseEntity.badRequest().body(null);
     }
 
-    @GetMapping("/trendings")
+    @GetMapping("/time/voteEvents")
     public ResponseEntity<List<Vote>> getVoteEventsByTimeZones(@RequestParam("startTime") Optional<String> startTime,
                                                                @RequestParam("endTime") Optional<String> endTime)
             throws BadIndexParamException {
         List<Vote> votes = voteService.getVotesBetweenTimeSpan(startTime, endTime);
+        return ResponseEntity.ok(votes);
+    }
+
+    @GetMapping("/pageable/voteRecords")
+    public ResponseEntity<List<Vote>> getVotesByUserAndTrendingId(@RequestParam("userId") Optional<Integer> userId,
+                                                                  @RequestParam("trendingId") Optional<Integer> trendingId,
+                                                                  @RequestParam("pageIndex") Optional<Integer> pageIndex,
+                                                                  @RequestParam("pageSize") Optional<Integer> pageSize)
+            throws BadIndexParamException {
+        List<Vote> votes = voteService.getVotesWithPageable(userId, trendingId, pageIndex, pageSize);
         return ResponseEntity.ok(votes);
     }
 }

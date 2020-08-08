@@ -51,7 +51,9 @@ class VoteControllerTest {
 
     @AfterEach
     void cleanUp() {
-        //userRepository.deleteAll();
+        voteRepository.deleteAll();
+        trendingRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
     @Test
@@ -183,7 +185,7 @@ class VoteControllerTest {
         String startTime = "2004-01-01 00:00:00";
         String endTime = "2007-08-08 00:00:00";
 
-        mockMvc.perform(get("/trendings").param("startTime", startTime)
+        mockMvc.perform(get("/time/voteEvents").param("startTime", startTime)
                 .param("endTime", endTime))
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$", hasSize(4)))
@@ -264,7 +266,7 @@ class VoteControllerTest {
         String startTime = "2010-08-08 00:00:00";
         String endTime = "2007-08-08 00:00:00";
 
-        mockMvc.perform(get("/trendings")
+        mockMvc.perform(get("/time/voteEvents")
                 .param("startTime", startTime)
                 .param("endTime", endTime))
                 .andExpect(status().isBadRequest())
@@ -305,10 +307,53 @@ class VoteControllerTest {
         String startTime = "2010-08-08 00:00:00";
         String endTime = "2007-08,08 00:00:00";
 
-        mockMvc.perform(get("/trendings")
+        mockMvc.perform(get("/time/voteEvents")
                 .param("startTime", startTime)
                 .param("endTime", endTime))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("error", is("The datetime is bad format")));
+    }
+
+    @Test
+    public void getVoteEventsByUserIdAndEventIdWithPageable() throws Exception {
+        Integer countDatas = 10;
+
+        DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+        String voteTime = "";
+
+        UserEntity userEntity = UserEntity.builder()
+                .phone("18883871607").email("842714673@qq.com").genderEnum(GenderEnum.MALE)
+                .age(26).userName("JYZ").voteNum(100).build();
+        userRepository.save(userEntity);
+
+
+        TrendingEntity trendingEntity = TrendingEntity.builder()
+                .trendingName("Test").keyWord("Test").purchaseDegree(5)
+                .purchasePrice(2D).totalVotes(10L).userId(1).build();
+        trendingRepository.save(trendingEntity);
+
+        for (int i = 1; i < countDatas; i++) {
+            voteTime = "200" + i + "-08-07 21:51:22";
+            VoteEntity voteEntity = VoteEntity.builder()
+                    .num(i).trendingId(1).userId(1)
+                    .voteTime(LocalDateTime.parse(voteTime, df)).build();
+            voteRepository.save(voteEntity);
+        }
+
+        Integer pageSize = 4;
+        Integer pageIndex = 2;
+
+        mockMvc.perform(get("/pageable/voteRecords")
+                .param("userId", String.valueOf(1))
+                .param("trendingId", String.valueOf(1))
+                .param("pageIndex", String.valueOf(pageIndex))
+                .param("pageSize", String.valueOf(pageSize)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$", hasSize(4)))
+                .andExpect(jsonPath("$[0].id", is(5)))
+                .andExpect(jsonPath("$[3].id", is(8)));
+
     }
 }
