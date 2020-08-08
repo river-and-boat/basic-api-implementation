@@ -15,4 +15,5 @@ import java.util.List;
 public interface TrendingRepository extends CrudRepository<TrendingEntity, Integer> {
     List<TrendingEntity> findAll();
     List<TrendingEntity> findByIdBetween(Integer startId, Integer endId);
+    boolean existsByPurchaseDegree(Integer purchaseDegree);
 }

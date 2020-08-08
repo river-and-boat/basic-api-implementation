@@ -33,7 +33,7 @@ public class MyExceptionHandler {
         else {
             commonErrorMessage.setError(ex.getMessage());
         }
-        //logger.error(ex.getMessage());
+        logger.error(ex.getMessage());
         return ResponseEntity.badRequest().body(commonErrorMessage);
     }
 }

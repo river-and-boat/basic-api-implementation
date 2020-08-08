@@ -4,8 +4,11 @@ import com.thoughtworks.rslist.domain.Trending;
 import com.thoughtworks.rslist.domain.User;
 import com.thoughtworks.rslist.domain.Vote;
 import com.thoughtworks.rslist.entity.TrendingEntity;
+import com.thoughtworks.rslist.entity.TrendingEntityHistory;
 import com.thoughtworks.rslist.entity.UserEntity;
 import com.thoughtworks.rslist.entity.VoteEntity;
+
+import java.time.LocalDateTime;
 
 /**
  * @Auto Jiang Yuzhou
@@ -80,5 +83,16 @@ public class ConvertTool {
                 .userId(voteEntity.getUserId())
                 .voteTime(voteEntity.getVoteTime())
                 .build();
+    }
+
+    public static TrendingEntityHistory convertTrendingToHistory(TrendingEntity entity, LocalDateTime time) {
+        return TrendingEntityHistory.builder()
+                .keyWord(entity.getKeyWord())
+                .userId(entity.getUserId())
+                .purchaseDegree(entity.getPurchaseDegree())
+                .purchasePrice(entity.getPurchasePrice())
+                .totalVotes(entity.getTotalVotes())
+                .trendingName(entity.getTrendingName())
+                .time(time).build();
     }
 }

@@ -1,18 +1,17 @@
 package com.thoughtworks.rslist.service;
 
+import com.thoughtworks.rslist.domain.Trade;
 import com.thoughtworks.rslist.domain.Trending;
 import com.thoughtworks.rslist.domain.User;
 import com.thoughtworks.rslist.entity.TrendingEntity;
-import com.thoughtworks.rslist.entity.UserEntity;
 import com.thoughtworks.rslist.exception.BadIndexParamException;
-import com.thoughtworks.rslist.exception.IndexOutException;
+import com.thoughtworks.rslist.repository.TrendingHisRepository;
 import com.thoughtworks.rslist.repository.TrendingRepository;
 import com.thoughtworks.rslist.repository.UserRepository;
 import com.thoughtworks.rslist.tool.ConvertTool;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -29,10 +28,14 @@ public class TrendingService {
 
     private final UserRepository userRepository;
 
+    private final TrendingHisRepository trendingHisRepository;
+
     public TrendingService(TrendingRepository trendingRepository,
-                           UserRepository userRepository) {
+                           UserRepository userRepository,
+                           TrendingHisRepository trendingHisRepository) {
         this.trendingRepository = trendingRepository;
         this.userRepository = userRepository;
+        this.trendingHisRepository = trendingHisRepository;
     }
 
     public Trending accessOneTrendingByIdService(Optional<Integer> id)
@@ -106,6 +109,31 @@ public class TrendingService {
             Integer index = id.get();
             trendingRepository.deleteById(index);
             return index;
+        }
+        throw new BadIndexParamException("invalid request param");
+    }
+
+    public Trending purchaseTrendingEvent(Optional<Trade> trade)
+            throws BadIndexParamException {
+        if (trade.isPresent()) {
+            Trade tradeEntity = trade.get();
+            // 1. 根据热搜id来找到该热搜
+            Optional<TrendingEntity> trending = trendingRepository.findById(tradeEntity.getTrendingId());
+            if (!trending.isPresent()) {
+                throw new BadIndexParamException("no exist trending in list");
+            }
+            TrendingEntity presentTrending = trending.get();
+            // 2. 加入历史表中
+            trendingHisRepository.save(ConvertTool.convertTrendingToHistory(presentTrending, LocalDateTime.now()));
+            // 3. 查看当前排名是否已被购买
+            if (trendingRepository.existsByPurchaseDegree(tradeEntity.getRant())) {
+
+            } else {
+                presentTrending.setPurchaseDegree(tradeEntity.getRant());
+                presentTrending.setPurchasePrice(tradeEntity.getAmount());
+                TrendingEntity result = trendingRepository.save(presentTrending);
+                return ConvertTool.convertTrendingEntityToTrending(result);
+            }
         }
         throw new BadIndexParamException("invalid request param");
     }
