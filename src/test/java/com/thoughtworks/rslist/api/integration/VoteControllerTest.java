@@ -1,5 +1,6 @@
 package com.thoughtworks.rslist.api.integration;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.rslist.domain.GenderEnum;
 import com.thoughtworks.rslist.domain.Vote;
@@ -129,7 +130,7 @@ class VoteControllerTest {
         Vote vote = new Vote();
         vote.setNum(8);
         vote.setUserId(latestUserId);
-        vote.setVoteTime(LocalDateTime.parse(voteTime, df));
+        //vote.setVoteTime(LocalDateTime.parse(voteTime, df));
 
         ObjectMapper objectMapper = new ObjectMapper();
 
@@ -146,8 +147,39 @@ class VoteControllerTest {
     }
 
     // 测试事务是否回滚
-    public void testTransaction() {
+    @Test
+    public void testTransaction() throws Exception {
+        DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        UserEntity userEntity = new UserEntity();
+        userEntity.setUserName("JYZ");
+        userEntity.setPhone("18883871607");
+        userEntity.setGenderEnum(GenderEnum.MALE);
+        userEntity.setEmail("hello@cq.com");
+        userEntity.setAge(26);
+        userEntity.setVoteNum(10);
+        userRepository.save(userEntity);
 
+        Integer latestUserId = userRepository.findAll().get(0).getId();
+
+        String voteTime = "2020-08-07 21:51:22";
+        Vote vote = new Vote();
+        vote.setNum(8);
+        vote.setUserId(latestUserId);
+        //vote.setVoteTime(LocalDateTime.parse(voteTime, df));
+
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        String s = objectMapper.writeValueAsString(vote);
+
+        // 假设没有trending
+        mockMvc.perform(post("/trending/" + 1 + "/vote")
+                .content(objectMapper.writeValueAsString(vote))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error", is("Can not find event in trending list, vote failed")));
+
+        // 原用户票数不应发生变化
+        assertEquals(10, userRepository.findById(latestUserId).get().getVoteNum());
     }
 
     @Test

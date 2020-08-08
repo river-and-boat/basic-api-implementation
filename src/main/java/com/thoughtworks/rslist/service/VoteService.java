@@ -51,7 +51,7 @@ public class VoteService {
         this.trendingRepository = trendingRepository;
     }
 
-    @Transactional
+    @Transactional(rollbackOn = {Exception.class})
     public Vote voteATrending(Optional<Integer> trendingId, Optional<Vote> vote)
             throws BadIndexParamException, VotingEventException {
         if (trendingId.isPresent() && vote.isPresent()) {
