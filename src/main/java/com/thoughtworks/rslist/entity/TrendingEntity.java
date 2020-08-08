@@ -44,6 +44,6 @@ public class TrendingEntity {
     @JoinColumn(name = "user_id", insertable = false, updatable = false)
     private UserEntity user;
 
-    @OneToMany(mappedBy = "trendingId", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "trendingId", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<VoteEntity> vote;
 }
