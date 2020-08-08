@@ -42,7 +42,6 @@ public class VoteController {
     public ResponseEntity<List<Vote>> getVoteEventsByTimeZones(@RequestParam("startTime") Optional<String> startTime,
                                                                @RequestParam("endTime") Optional<String> endTime)
             throws BadIndexParamException {
-
         List<Vote> votes = voteService.getVotesBetweenTimeSpan(startTime, endTime);
         return ResponseEntity.ok(votes);
     }

@@ -17,6 +17,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -84,10 +86,14 @@ public class VoteService {
             throws BadIndexParamException {
         if (startTime.isPresent() && endTime.isPresent()) {
             // 正则表达式验证是否为日期格式的字符串
+            if (!isDateFormat(startTime.get()) || !isDateFormat(endTime.get())) {
+                throw new BadIndexParamException("The datetime is bad format");
+            }
+
             LocalDateTime start = LocalDateTime.parse(startTime.get(), DF);
             LocalDateTime end = LocalDateTime.parse(endTime.get(), DF);
             if (start.isAfter(end)) {
-                throw new BadIndexParamException("invalid request param");
+                throw new BadIndexParamException("End time can't be earlier than start time");
             }
             List<VoteEntity> voteEntities = voteRepository.getVoteEntitiesByVoteTimeBetween(start, end);
 
@@ -95,5 +101,15 @@ public class VoteService {
                     .collect(Collectors.toList());
         }
         throw new BadIndexParamException("invalid request param");
+    }
+
+    private boolean isDateFormat(String dateFormatStr) {
+        Pattern pattern = Pattern.compile("^((\\d{2}(([02468][048])|([13579][26]))[\\-\\/\\s]?((((0?[13578])|(1[02]))[\\-\\/\\s]?" +
+                "((0?[1-9])|([1-2][0-9])|(3[01])))|(((0?[469])|(11))[\\-\\/\\s]?((0?[1-9])|([1-2][0-9])|(30)))|(0?2[\\-\\/\\s]?" +
+                "((0?[1-9])|([1-2][0-9])))))|(\\d{2}(([02468][1235679])|([13579][01345789]))[\\-\\/\\s]?((((0?[13578])|(1[02]))" +
+                "[\\-\\/\\s]?((0?[1-9])|([1-2][0-9])|(3[01])))|(((0?[469])|(11))[\\-\\/\\s]?((0?[1-9])|([1-2][0-9])|(30)))|(0?2[\\-\\/\\s]?((0?[1-9])|" +
+                "(1[0-9])|(2[0-8]))))))(\\s((([0-1][0-9])|(2?[0-3]))\\:([0-5]?[0-9])((\\s)|(\\:([0-5]?[0-9])))))?$");
+        Matcher matcher = pattern.matcher(dateFormatStr);
+        return matcher.matches();
     }
 }
