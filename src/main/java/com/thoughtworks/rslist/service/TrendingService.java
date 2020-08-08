@@ -5,7 +5,7 @@ import com.thoughtworks.rslist.domain.Trending;
 import com.thoughtworks.rslist.domain.User;
 import com.thoughtworks.rslist.entity.TrendingEntity;
 import com.thoughtworks.rslist.exception.BadIndexParamException;
-import com.thoughtworks.rslist.repository.TrendingHisRepository;
+import com.thoughtworks.rslist.repository.PurchaseEventRepository;
 import com.thoughtworks.rslist.repository.TrendingRepository;
 import com.thoughtworks.rslist.repository.UserRepository;
 import com.thoughtworks.rslist.tool.ConvertTool;
@@ -28,14 +28,14 @@ public class TrendingService {
 
     private final UserRepository userRepository;
 
-    private final TrendingHisRepository trendingHisRepository;
+    private final PurchaseEventRepository purchaseEventRepository;
 
     public TrendingService(TrendingRepository trendingRepository,
                            UserRepository userRepository,
-                           TrendingHisRepository trendingHisRepository) {
+                           PurchaseEventRepository purchaseEventRepository) {
         this.trendingRepository = trendingRepository;
         this.userRepository = userRepository;
-        this.trendingHisRepository = trendingHisRepository;
+        this.purchaseEventRepository = purchaseEventRepository;
     }
 
     public Trending accessOneTrendingByIdService(Optional<Integer> id)
@@ -123,18 +123,27 @@ public class TrendingService {
                 throw new BadIndexParamException("no exist trending in list");
             }
             TrendingEntity presentTrending = trending.get();
-            // 2. 加入历史表中
-            trendingHisRepository.save(ConvertTool.convertTrendingToHistory(presentTrending, LocalDateTime.now()));
             // 3. 查看当前排名是否已被购买
             if (trendingRepository.existsByPurchaseDegree(tradeEntity.getRant())) {
-
+                if (tradeEntity.getAmount() > presentTrending.getPurchasePrice()) {
+                    return updatePurchaseEvent(presentTrending, tradeEntity);
+                }
+                throw new BadIndexParamException("the price is lower than now");
             } else {
-                presentTrending.setPurchaseDegree(tradeEntity.getRant());
-                presentTrending.setPurchasePrice(tradeEntity.getAmount());
-                TrendingEntity result = trendingRepository.save(presentTrending);
-                return ConvertTool.convertTrendingEntityToTrending(result);
+                return updatePurchaseEvent(presentTrending, tradeEntity);
             }
         }
         throw new BadIndexParamException("invalid request param");
+    }
+
+    private Trending updatePurchaseEvent(TrendingEntity presentTrending, Trade tradeEntity) {
+        // 2. 更新现有列表
+        presentTrending.setPurchaseDegree(tradeEntity.getRant());
+        presentTrending.setPurchasePrice(tradeEntity.getAmount());
+        // 3. 加入购买记录
+
+        purchaseEventRepository.save(ConvertTool.convertTrendingToPurchaseEvent(presentTrending, LocalDateTime.now()));
+        TrendingEntity result = trendingRepository.save(presentTrending);
+        return ConvertTool.convertTrendingEntityToTrending(result);
     }
 }

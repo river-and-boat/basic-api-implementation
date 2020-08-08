@@ -4,7 +4,7 @@ import com.thoughtworks.rslist.domain.Trending;
 import com.thoughtworks.rslist.domain.User;
 import com.thoughtworks.rslist.domain.Vote;
 import com.thoughtworks.rslist.entity.TrendingEntity;
-import com.thoughtworks.rslist.entity.TrendingEntityHistory;
+import com.thoughtworks.rslist.entity.PurchaseEntity;
 import com.thoughtworks.rslist.entity.UserEntity;
 import com.thoughtworks.rslist.entity.VoteEntity;
 
@@ -85,14 +85,12 @@ public class ConvertTool {
                 .build();
     }
 
-    public static TrendingEntityHistory convertTrendingToHistory(TrendingEntity entity, LocalDateTime time) {
-        return TrendingEntityHistory.builder()
-                .keyWord(entity.getKeyWord())
-                .userId(entity.getUserId())
+    public static PurchaseEntity convertTrendingToPurchaseEvent(TrendingEntity entity, LocalDateTime time) {
+        return PurchaseEntity.builder()
                 .purchaseDegree(entity.getPurchaseDegree())
                 .purchasePrice(entity.getPurchasePrice())
-                .totalVotes(entity.getTotalVotes())
                 .trendingName(entity.getTrendingName())
+                .trendingId(entity.getId())
                 .time(time).build();
     }
 }

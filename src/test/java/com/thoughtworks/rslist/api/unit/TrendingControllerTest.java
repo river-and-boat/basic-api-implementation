@@ -5,7 +5,7 @@ import com.thoughtworks.rslist.domain.Trending;
 import com.thoughtworks.rslist.entity.TrendingEntity;
 import com.thoughtworks.rslist.entity.UserEntity;
 import com.thoughtworks.rslist.exception.BadIndexParamException;
-import com.thoughtworks.rslist.repository.TrendingHisRepository;
+import com.thoughtworks.rslist.repository.PurchaseEventRepository;
 import com.thoughtworks.rslist.repository.TrendingRepository;
 import com.thoughtworks.rslist.repository.UserRepository;
 import com.thoughtworks.rslist.service.TrendingService;
@@ -43,7 +43,7 @@ public class TrendingControllerTest {
     private TrendingRepository trendingRepository;
 
     @Mock
-    private TrendingHisRepository trendingHisRepository;
+    private PurchaseEventRepository purchaseEventRepository;
 
     @Mock
     private UserRepository userRepository;
@@ -54,7 +54,7 @@ public class TrendingControllerTest {
     @BeforeEach
     void init() {
         initMocks(this);
-        trendingService = new TrendingService(trendingRepository, userRepository, trendingHisRepository);
+        trendingService = new TrendingService(trendingRepository, userRepository, purchaseEventRepository);
     }
 
     @Test
@@ -84,7 +84,7 @@ public class TrendingControllerTest {
 
         assertEquals(error, "no exist trending in list");
         verify(trendingRepository, times(1)).findById(anyInt());
-        verify(trendingHisRepository, times(0)).save(any());
+        verify(purchaseEventRepository, times(0)).save(any());
     }
 
     @Test
@@ -108,5 +108,23 @@ public class TrendingControllerTest {
 
         assertEquals(rant, result.getPurchaseDegree());
         assertEquals(amount, result.getPurchasePrice());
+    }
+
+    @Test
+    public void testPurchaseTrendingWithPriceLowerThanNow() {
+        Integer trendingId = 1;
+        Integer rant = 1;
+        Double amount = 100D;
+        String trendingName = "热搜测试";
+        Optional<Trade> trade = Optional.ofNullable(new Trade(90D, 1, trendingId));
+
+        when(trendingRepository.findById(anyInt()))
+                .thenReturn(Optional.ofNullable(TrendingEntity.builder().id(trendingId).keyWord("测试")
+                        .purchaseDegree(rant).purchasePrice(amount).totalVotes(10L).trendingName(trendingName).user(new UserEntity()).userId(1).build()));
+
+        when(trendingRepository.existsByPurchaseDegree(anyInt()))
+                .thenReturn(true);
+
+
     }
 }
