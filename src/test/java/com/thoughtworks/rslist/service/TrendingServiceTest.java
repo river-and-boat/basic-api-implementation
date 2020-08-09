@@ -4,7 +4,7 @@ import com.thoughtworks.rslist.domain.Trade;
 import com.thoughtworks.rslist.domain.Trending;
 import com.thoughtworks.rslist.entity.TrendingEntity;
 import com.thoughtworks.rslist.entity.UserEntity;
-import com.thoughtworks.rslist.exception.BadIndexParamException;
+import com.thoughtworks.rslist.exception.exception_type.BadIndexParamException;
 import com.thoughtworks.rslist.repository.PurchaseEventRepository;
 import com.thoughtworks.rslist.repository.TrendingRepository;
 import com.thoughtworks.rslist.repository.UserRepository;
@@ -15,15 +15,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-
 import java.util.Optional;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
-import static org.mockito.MockitoAnnotations.initMocks;
 
 /**
  * @Auto Jiang Yuzhou
@@ -139,7 +136,8 @@ public class TrendingServiceTest {
 
         when(trendingRepository.findById(anyInt()))
                 .thenReturn(Optional.ofNullable(TrendingEntity.builder().id(trendingId).keyWord("测试")
-                        .purchaseDegree(rant).purchasePrice(amount).totalVotes(10L).trendingName(trendingName).user(new UserEntity()).userId(1).build()));
+                        .purchaseDegree(rant).purchasePrice(amount).totalVotes(10L).trendingName(trendingName)
+                        .user(new UserEntity()).userId(1).build()));
 
         when(trendingRepository.findByPurchaseDegree(anyInt()))
                 .thenReturn(Optional.ofNullable(TrendingEntity.builder().id(2).keyWord("待被购买")

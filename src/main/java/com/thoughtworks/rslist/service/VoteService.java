@@ -4,8 +4,8 @@ import com.thoughtworks.rslist.domain.Vote;
 import com.thoughtworks.rslist.entity.TrendingEntity;
 import com.thoughtworks.rslist.entity.UserEntity;
 import com.thoughtworks.rslist.entity.VoteEntity;
-import com.thoughtworks.rslist.exception.BadIndexParamException;
-import com.thoughtworks.rslist.exception.VotingEventException;
+import com.thoughtworks.rslist.exception.exception_type.BadIndexParamException;
+import com.thoughtworks.rslist.exception.exception_type.VotingEventException;
 import com.thoughtworks.rslist.repository.TrendingRepository;
 import com.thoughtworks.rslist.repository.UserRepository;
 import com.thoughtworks.rslist.repository.VoteRepository;
@@ -19,8 +19,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**

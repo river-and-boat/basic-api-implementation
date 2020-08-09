@@ -4,7 +4,7 @@ import com.thoughtworks.rslist.domain.Trade;
 import com.thoughtworks.rslist.domain.Trending;
 import com.thoughtworks.rslist.domain.User;
 import com.thoughtworks.rslist.entity.TrendingEntity;
-import com.thoughtworks.rslist.exception.BadIndexParamException;
+import com.thoughtworks.rslist.exception.exception_type.BadIndexParamException;
 import com.thoughtworks.rslist.repository.PurchaseEventRepository;
 import com.thoughtworks.rslist.repository.TrendingRepository;
 import com.thoughtworks.rslist.repository.UserRepository;

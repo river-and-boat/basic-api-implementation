@@ -7,7 +7,6 @@ import com.thoughtworks.rslist.entity.TrendingEntity;
 import com.thoughtworks.rslist.entity.PurchaseEntity;
 import com.thoughtworks.rslist.entity.UserEntity;
 import com.thoughtworks.rslist.entity.VoteEntity;
-import com.thoughtworks.rslist.exception.BadIndexParamException;
 
 import java.time.LocalDateTime;
 

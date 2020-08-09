@@ -1,7 +1,6 @@
 package com.thoughtworks.rslist.config;
 
-import com.thoughtworks.rslist.exception.DateTimeConvertException;
-import lombok.SneakyThrows;
+import com.thoughtworks.rslist.exception.exception_type.DateTimeConvertException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;

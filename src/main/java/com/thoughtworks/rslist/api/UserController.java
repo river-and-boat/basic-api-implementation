@@ -1,11 +1,9 @@
 package com.thoughtworks.rslist.api;
 
 import com.thoughtworks.rslist.domain.User;
-import com.thoughtworks.rslist.entity.UserEntity;
-import com.thoughtworks.rslist.exception.BadIndexParamException;
-import com.thoughtworks.rslist.exception.MysqlOperatingException;
+import com.thoughtworks.rslist.exception.exception_type.BadIndexParamException;
+import com.thoughtworks.rslist.exception.exception_type.MysqlOperatingException;
 import com.thoughtworks.rslist.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

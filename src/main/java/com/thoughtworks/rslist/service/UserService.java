@@ -2,15 +2,12 @@ package com.thoughtworks.rslist.service;
 
 import com.thoughtworks.rslist.domain.User;
 import com.thoughtworks.rslist.entity.UserEntity;
-import com.thoughtworks.rslist.exception.BadIndexParamException;
-import com.thoughtworks.rslist.exception.MysqlOperatingException;
+import com.thoughtworks.rslist.exception.exception_type.BadIndexParamException;
+import com.thoughtworks.rslist.exception.exception_type.MysqlOperatingException;
 import com.thoughtworks.rslist.repository.UserRepository;
 import com.thoughtworks.rslist.tool.ConvertTool;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
