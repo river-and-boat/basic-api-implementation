@@ -539,6 +539,50 @@ class TrendingControllerTest {
         assertEquals(rant, purchaseEntity.getPurchaseDegree());
     }
 
+    @Test
+    public void testPurchaseTrendingWithOneSameExistItem() throws Exception {
+        UserEntity userEntity = new UserEntity();
+        userEntity.setAge(32);
+        userEntity.setUserName("admin");
+        userEntity.setEmail("hellocq@163.com");
+        userEntity.setGenderEnum(GenderEnum.MALE);
+        userEntity.setPhone("15326147230");
+        userRepository.save(userEntity);
+
+        // 给出的数据中，vote 2已经存在，等级为2，购买价格为70D
+        trendingRepository.save(TrendingEntity.builder().trendingName("vote 1")
+                .user(UserEntity.builder().id(1).build()).purchaseDegree(0).totalVotes(100L).build());
+        trendingRepository.save(TrendingEntity.builder().trendingName("vote 2")
+                .user(UserEntity.builder().id(1).build()).purchaseDegree(2).purchasePrice(70D).totalVotes(100L).build());
+        trendingRepository.save(TrendingEntity.builder().trendingName("vote 3")
+                .user(UserEntity.builder().id(1).build()).purchaseDegree(0).totalVotes(100L).build());
+
+        // 把事件2买到热搜第1位
+        Integer trendingId = 2;
+        Integer rant = 1;
+        Double amount = 80D;
+        Trade trade = new Trade(amount, rant, trendingId);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        mockMvc.perform(post("/trending/purchase")
+                .content(objectMapper.writeValueAsString(trade))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated());
+
+        TrendingEntity trendingEntity = trendingRepository.findById(trendingId).get();
+        assertEquals(amount, trendingEntity.getPurchasePrice());
+        assertEquals(rant, trendingEntity.getPurchaseDegree());
+
+        int size = trendingRepository.findAll().size();
+        assertEquals(3, size);
+
+        PurchaseEntity purchaseEntity = purchaseEventRepository.findById(1).get();
+        assertEquals(trendingId, purchaseEntity.getTrendingId());
+        assertEquals(amount, purchaseEntity.getPurchasePrice());
+        assertEquals(rant, purchaseEntity.getPurchaseDegree());
+    }
+
     public void testPurchaseTrendingWithExceptionAndRollBack() {
 
     }
