@@ -11,6 +11,7 @@ import com.thoughtworks.rslist.repository.TrendingRepository;
 import com.thoughtworks.rslist.repository.UserRepository;
 import com.thoughtworks.rslist.tool.ConvertTool;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -148,6 +149,7 @@ public class TrendingService {
         throw new BadIndexParamException("invalid request param");
     }
 
+    @Transactional(rollbackFor = {Exception.class})
     public Trending purchaseTrendingEvent(Optional<Trade> trade)
             throws BadIndexParamException {
         if (trade.isPresent()) {
@@ -186,7 +188,7 @@ public class TrendingService {
             trendingRepository.deleteById(purchaseEntity.getId());
         }
         TrendingEntity result = trendingRepository.save(presentTrending);
-        if (result != null && result.getUser() != null) {
+        if (result != null) {
             return ConvertTool.convertTrendingEntityToTrending(result);
         }
         throw new BadIndexParamException("input converting param is null " +

@@ -1,5 +1,6 @@
 package com.thoughtworks.rslist.api;
 
+import com.thoughtworks.rslist.domain.Trade;
 import com.thoughtworks.rslist.domain.Trending;
 import com.thoughtworks.rslist.exception.exception_type.BadIndexParamException;
 import com.thoughtworks.rslist.exception.exception_type.TrendingShowSortException;
@@ -66,5 +67,16 @@ public class TrendingController {
         Integer index = trendingService.deleteTrendingById(id);
         return ResponseEntity.status(HttpStatus.OK)
                 .header("delete", index.toString()).body(null);
+    }
+
+    @PostMapping("/trending/purchase")
+    public ResponseEntity purchaseTrendingEvent(@RequestBody Optional<Trade> trade)
+            throws BadIndexParamException {
+        Trending trending = trendingService.purchaseTrendingEvent(trade);
+        if (trending != null) {
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .header("add", trending.getId().toString()).body(null);
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
     }
 }

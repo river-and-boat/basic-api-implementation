@@ -1,8 +1,13 @@
 package com.thoughtworks.rslist.api;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.rslist.domain.GenderEnum;
+import com.thoughtworks.rslist.domain.Trade;
+import com.thoughtworks.rslist.entity.PurchaseEntity;
 import com.thoughtworks.rslist.entity.TrendingEntity;
 import com.thoughtworks.rslist.entity.UserEntity;
+import com.thoughtworks.rslist.repository.PurchaseEventRepository;
 import com.thoughtworks.rslist.repository.TrendingRepository;
 import com.thoughtworks.rslist.repository.UserRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -18,6 +23,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -37,6 +43,9 @@ class TrendingControllerTest {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private PurchaseEventRepository purchaseEventRepository;
 
     @AfterEach
     public void cleanUp() {
@@ -406,13 +415,13 @@ class TrendingControllerTest {
     public void testShowAllTrendingListInOrder() throws Exception {
         String expected =
                 "{\"1\":{\"id\":6,\"trendingName\":\"purchase 3\",\"keyWord\":null,\"userId\":null,\"totalVotes\":0,\"purchasePrice\":0.0,\"purchaseDegree\":1}," +
-                "\"2\":{\"id\":2,\"trendingName\":\"vote 5\",\"keyWord\":null,\"userId\":null,\"totalVotes\":100,\"purchasePrice\":0.0,\"purchaseDegree\":0}," +
-                "\"3\":{\"id\":1,\"trendingName\":\"purchase 1\",\"keyWord\":null,\"userId\":null,\"totalVotes\":0,\"purchasePrice\":0.0,\"purchaseDegree\":3}," +
-                "\"4\":{\"id\":5,\"trendingName\":\"vote 2\",\"keyWord\":null,\"userId\":null,\"totalVotes\":80,\"purchasePrice\":0.0,\"purchaseDegree\":0}," +
-                "\"5\":{\"id\":3,\"trendingName\":\"purchase 2\",\"keyWord\":null,\"userId\":null,\"totalVotes\":0,\"purchasePrice\":0.0,\"purchaseDegree\":5}," +
-                "\"6\":{\"id\":4,\"trendingName\":\"vote 1\",\"keyWord\":null,\"userId\":null,\"totalVotes\":50,\"purchasePrice\":0.0,\"purchaseDegree\":0}," +
-                "\"7\":{\"id\":7,\"trendingName\":\"vote 4\",\"keyWord\":null,\"userId\":null,\"totalVotes\":30,\"purchasePrice\":0.0,\"purchaseDegree\":0}," +
-                "\"8\":{\"id\":8,\"trendingName\":\"vote 3\",\"keyWord\":null,\"userId\":null,\"totalVotes\":10,\"purchasePrice\":0.0,\"purchaseDegree\":0}}";
+                        "\"2\":{\"id\":2,\"trendingName\":\"vote 5\",\"keyWord\":null,\"userId\":null,\"totalVotes\":100,\"purchasePrice\":0.0,\"purchaseDegree\":0}," +
+                        "\"3\":{\"id\":1,\"trendingName\":\"purchase 1\",\"keyWord\":null,\"userId\":null,\"totalVotes\":0,\"purchasePrice\":0.0,\"purchaseDegree\":3}," +
+                        "\"4\":{\"id\":5,\"trendingName\":\"vote 2\",\"keyWord\":null,\"userId\":null,\"totalVotes\":80,\"purchasePrice\":0.0,\"purchaseDegree\":0}," +
+                        "\"5\":{\"id\":3,\"trendingName\":\"purchase 2\",\"keyWord\":null,\"userId\":null,\"totalVotes\":0,\"purchasePrice\":0.0,\"purchaseDegree\":5}," +
+                        "\"6\":{\"id\":4,\"trendingName\":\"vote 1\",\"keyWord\":null,\"userId\":null,\"totalVotes\":50,\"purchasePrice\":0.0,\"purchaseDegree\":0}," +
+                        "\"7\":{\"id\":7,\"trendingName\":\"vote 4\",\"keyWord\":null,\"userId\":null,\"totalVotes\":30,\"purchasePrice\":0.0,\"purchaseDegree\":0}," +
+                        "\"8\":{\"id\":8,\"trendingName\":\"vote 3\",\"keyWord\":null,\"userId\":null,\"totalVotes\":10,\"purchasePrice\":0.0,\"purchaseDegree\":0}}";
 
         UserEntity userEntity = new UserEntity();
         userEntity.setAge(32);
@@ -445,5 +454,48 @@ class TrendingControllerTest {
 
         List<String> trendingNameArray = Arrays.asList("购买测试3", "投票测试5", "购买测试1", "投票测试2",
                 "购买测试2", "投票测试1", "投票测试4", "投票测试3");
+    }
+
+    @Test
+    public void testPurchaseTrendingInNoExistCase() throws Exception {
+        UserEntity userEntity = new UserEntity();
+        userEntity.setAge(32);
+        userEntity.setUserName("admin");
+        userEntity.setEmail("hellocq@163.com");
+        userEntity.setGenderEnum(GenderEnum.MALE);
+        userEntity.setPhone("15326147230");
+        userRepository.save(userEntity);
+
+        trendingRepository.save(TrendingEntity.builder().trendingName("vote 1")
+                .user(UserEntity.builder().id(1).build()).purchaseDegree(0).totalVotes(100L).build());
+        trendingRepository.save(TrendingEntity.builder().trendingName("vote 2")
+                .user(UserEntity.builder().id(1).build()).purchaseDegree(0).totalVotes(100L).build());
+        trendingRepository.save(TrendingEntity.builder().trendingName("vote 3")
+                .user(UserEntity.builder().id(1).build()).purchaseDegree(0).totalVotes(100L).build());
+
+        Integer trendingId = 1;
+        Integer rant = 1;
+        Double amount = 80D;
+        Trade trade = new Trade(amount, rant, trendingId);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        mockMvc.perform(post("/trending/purchase")
+                .content(objectMapper.writeValueAsString(trade))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated());
+
+        TrendingEntity trendingEntity = trendingRepository.findById(trendingId).get();
+        assertEquals(amount, trendingEntity.getPurchasePrice());
+        assertEquals(rant, trendingEntity.getPurchaseDegree());
+
+        PurchaseEntity purchaseEntity = purchaseEventRepository.findById(1).get();
+        assertEquals(trendingId,purchaseEntity.getTrendingId());
+        assertEquals(amount, purchaseEntity.getPurchasePrice());
+        assertEquals(rant, purchaseEntity.getPurchaseDegree());
+    }
+
+    public void testPurchaseTrendingWithExceptionAndRollBack() {
+
     }
 }
