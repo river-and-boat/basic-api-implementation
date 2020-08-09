@@ -1,5 +1,6 @@
 package com.thoughtworks.rslist.domain;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,11 +23,15 @@ public class Vote {
 
     private Integer id;
 
+    @ApiModelProperty(value = "用户id")
     private Integer userId;
 
+    @ApiModelProperty(value = "热搜id")
     private Integer trendingId;
 
+    @ApiModelProperty(value = "投票时间")
     private LocalDateTime voteTime;
 
+    @ApiModelProperty(value = "投票数")
     private Integer num;
 }

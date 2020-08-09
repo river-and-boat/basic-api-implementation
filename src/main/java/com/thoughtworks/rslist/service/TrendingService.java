@@ -105,12 +105,17 @@ public class TrendingService {
     public Trending addNewTrending(Optional<Trending> newTrending)
             throws BadIndexParamException {
         if (newTrending.isPresent()) {
-            User user = newTrending.get().getUser();
+            Trending trending = newTrending.get();
+            if (trending.getPurchaseDegree() > 0 ||
+            trending.getPurchasePrice() > 0 || trending.getTotalVotes() > 0) {
+                throw new BadIndexParamException("new trending invalid. name: [TrendingService.addNewTrending]");
+            }
+            User user = trending.getUser();
             if (user == null || user.getId() == null
                     || !userRepository.existsById(user.getId())) {
                 throw new BadIndexParamException("invalid request param");
             }
-            TrendingEntity trendingEntity = ConvertTool.convertTrendingToTrendingEntity(newTrending.get());
+            TrendingEntity trendingEntity = ConvertTool.convertTrendingToTrendingEntity(trending);
             TrendingEntity saveEntity = trendingRepository.save(trendingEntity);
             return ConvertTool.convertTrendingEntityToTrending(saveEntity);
         }
