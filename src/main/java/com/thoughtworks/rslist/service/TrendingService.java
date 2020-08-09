@@ -60,7 +60,7 @@ public class TrendingService {
         if (startId.isPresent() && endId.isPresent()) {
             Integer id_start = startId.get();
             Integer id_end = endId.get();
-            if (id_start < 0 || id_end < 0 || id_end > id_start) {
+            if (id_start < 0 || id_end < 0 || id_end < id_start) {
                 throw new BadIndexParamException("invalid request param");
             } else {
                 List<TrendingEntity> resultList = trendingRepository.findByIdBetween(id_start, id_end);
