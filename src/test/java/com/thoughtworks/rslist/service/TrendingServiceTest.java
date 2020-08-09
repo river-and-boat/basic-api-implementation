@@ -48,7 +48,6 @@ public class TrendingServiceTest {
 
     @BeforeEach
     void init() {
-        initMocks(this);
         trendingService = new TrendingService(trendingRepository, userRepository, purchaseEventRepository);
     }
 
@@ -106,7 +105,7 @@ public class TrendingServiceTest {
     }
 
     @Test
-    public void testPurchaseTrendingWithPriceLowerThanNow() {
+    public void testPurchaseTrendingWithPriceLowerThanNow() throws BadIndexParamException {
         Integer trendingId = 1;
         Integer rant = 1;
         Double amount = 100D;
@@ -120,6 +119,13 @@ public class TrendingServiceTest {
         when(trendingRepository.existsByPurchaseDegree(anyInt()))
                 .thenReturn(true);
 
+        String error = assertThrows(BadIndexParamException.class, () -> {
+            trendingService.purchaseTrendingEvent(trade);
+        }).getMessage();
 
+        assertEquals(error, "the price is lower than now");
+        verify(trendingRepository, times(1)).findById(anyInt());
+        verify(purchaseEventRepository, times(0)).save(any());
+        verify(trendingRepository, times(0)).save(any());
     }
 }
