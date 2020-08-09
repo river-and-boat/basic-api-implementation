@@ -7,6 +7,7 @@ import com.thoughtworks.rslist.entity.TrendingEntity;
 import com.thoughtworks.rslist.entity.PurchaseEntity;
 import com.thoughtworks.rslist.entity.UserEntity;
 import com.thoughtworks.rslist.entity.VoteEntity;
+import com.thoughtworks.rslist.exception.BadIndexParamException;
 
 import java.time.LocalDateTime;
 
@@ -26,6 +27,7 @@ public class ConvertTool {
                 .voteNum(userEntity.getVoteNum())
                 .email(userEntity.getEmail())
                 .phone(userEntity.getPhone()).build();
+
     }
 
     public static UserEntity convertUserToUserEntity(User user) {
@@ -85,7 +87,8 @@ public class ConvertTool {
                 .build();
     }
 
-    public static PurchaseEntity convertTrendingToPurchaseEvent(TrendingEntity entity, LocalDateTime time) {
+    public static PurchaseEntity convertTrendingToPurchaseEvent(TrendingEntity entity,
+                                                                LocalDateTime time) {
         return PurchaseEntity.builder()
                 .purchaseDegree(entity.getPurchaseDegree())
                 .purchasePrice(entity.getPurchasePrice())

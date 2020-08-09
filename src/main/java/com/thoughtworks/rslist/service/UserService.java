@@ -42,7 +42,7 @@ public class UserService {
         throw new BadIndexParamException("invalid request param");
     }
 
-    public Integer addNewUser(Optional<User> newUser) {
+    public Integer addNewUser(Optional<User> newUser) throws BadIndexParamException {
         if (newUser.isPresent()) {
             User convertingUser = newUser.get();
             // 类型转换
@@ -55,11 +55,15 @@ public class UserService {
         return NAN_USER;
     }
 
-    public List<User> getAllUsers() {
-        return userRepository.findAll()
-                .stream()
-                .map(s -> ConvertTool.convertUserEntityToUser(s))
-                .collect(Collectors.toList());
+    public List<User> getAllUsers() throws BadIndexParamException {
+        List<UserEntity> resultList = userRepository.findAll();
+        if (resultList != null) {
+            return resultList.stream()
+                    .map(s ->  ConvertTool.convertUserEntityToUser(s))
+                    .collect(Collectors.toList());
+        }
+        throw new BadIndexParamException("input converting param is null " +
+                "[name: UserService.getAllUsers]");
     }
 
     public Integer deleteUserById(Optional<Integer> id)

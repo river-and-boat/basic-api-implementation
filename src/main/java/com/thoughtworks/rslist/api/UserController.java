@@ -35,7 +35,8 @@ public class UserController {
     }
 
     @PostMapping("/users/")
-    public ResponseEntity addNewUser(@RequestBody @Valid Optional<User> newUser) {
+    public ResponseEntity addNewUser(@RequestBody @Valid Optional<User> newUser)
+            throws BadIndexParamException {
         Integer userId = userService.addNewUser(newUser);
         if (userId > 0) {
             return ResponseEntity.status(HttpStatus.CREATED)
@@ -46,7 +47,7 @@ public class UserController {
     }
 
     @GetMapping("/users/all")
-    public ResponseEntity<List<User>> getAllUsers() {
+    public ResponseEntity<List<User>> getAllUsers() throws BadIndexParamException {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 

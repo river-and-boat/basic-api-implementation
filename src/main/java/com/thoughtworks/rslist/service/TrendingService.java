@@ -58,9 +58,14 @@ public class TrendingService {
             if (id_start < 0 || id_end < 0 || id_end > id_start) {
                 throw new BadIndexParamException("invalid request param");
             } else {
-                return trendingRepository.findByIdBetween(id_start, id_end)
-                        .stream().map(s -> ConvertTool.convertTrendingEntityToTrending(s))
-                        .collect(Collectors.toList());
+                List<TrendingEntity> resultList = trendingRepository.findByIdBetween(id_start, id_end);
+                if (resultList != null) {
+                    return resultList
+                            .stream().map(s -> ConvertTool.convertTrendingEntityToTrending(s))
+                            .collect(Collectors.toList());
+                }
+                throw new BadIndexParamException("input converting param is null " +
+                        "[name: TrendingService.accessTrendingListFromStartToEndService]");
             }
         }
         throw new BadIndexParamException("invalid request param");
@@ -123,27 +128,38 @@ public class TrendingService {
                 throw new BadIndexParamException("no exist trending in list");
             }
             TrendingEntity presentTrending = trending.get();
-            // 3. 查看当前排名是否已被购买
-            if (trendingRepository.existsByPurchaseDegree(tradeEntity.getRant())) {
-                if (tradeEntity.getAmount() > presentTrending.getPurchasePrice()) {
-                    return updatePurchaseEvent(presentTrending, tradeEntity);
+            Optional<TrendingEntity> purchaseOptional = trendingRepository
+                    .findByPurchaseDegree(tradeEntity.getRant());
+            if (purchaseOptional.isPresent()) {
+                TrendingEntity purchaseEntity = purchaseOptional.get();
+                if (tradeEntity.getAmount() > purchaseEntity.getPurchasePrice()) {
+                    return updatePurchaseEvent(presentTrending, tradeEntity, purchaseEntity);
                 }
                 throw new BadIndexParamException("the price is lower than now");
             } else {
-                return updatePurchaseEvent(presentTrending, tradeEntity);
+                return updatePurchaseEvent(presentTrending, tradeEntity, null);
             }
         }
         throw new BadIndexParamException("invalid request param");
     }
 
-    private Trending updatePurchaseEvent(TrendingEntity presentTrending, Trade tradeEntity) {
+    private Trending updatePurchaseEvent(TrendingEntity presentTrending, Trade tradeEntity
+            , TrendingEntity purchaseEntity) throws BadIndexParamException {
         // 2. 更新现有列表
         presentTrending.setPurchaseDegree(tradeEntity.getRant());
         presentTrending.setPurchasePrice(tradeEntity.getAmount());
         // 3. 加入购买记录
-
-        purchaseEventRepository.save(ConvertTool.convertTrendingToPurchaseEvent(presentTrending, LocalDateTime.now()));
+        purchaseEventRepository.save(ConvertTool
+                .convertTrendingToPurchaseEvent(presentTrending, LocalDateTime.now()));
+        // 4. 如果现有数据存在，则删除现有的购买的热搜
+        if (purchaseEntity != null) {
+            trendingRepository.deleteById(purchaseEntity.getId());
+        }
         TrendingEntity result = trendingRepository.save(presentTrending);
-        return ConvertTool.convertTrendingEntityToTrending(result);
+        if (result != null && result.getUser() != null) {
+            return ConvertTool.convertTrendingEntityToTrending(result);
+        }
+        throw new BadIndexParamException("input converting param is null " +
+                "[name: TrendingService.updatePurchaseEvent]");
     }
 }

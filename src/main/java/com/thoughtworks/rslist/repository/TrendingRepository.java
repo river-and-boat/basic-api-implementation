@@ -5,6 +5,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @Auto Jiang Yuzhou
@@ -15,5 +16,5 @@ import java.util.List;
 public interface TrendingRepository extends CrudRepository<TrendingEntity, Integer> {
     List<TrendingEntity> findAll();
     List<TrendingEntity> findByIdBetween(Integer startId, Integer endId);
-    boolean existsByPurchaseDegree(Integer purchaseDegree);
+    Optional<TrendingEntity> findByPurchaseDegree(Integer purchasePrice);
 }

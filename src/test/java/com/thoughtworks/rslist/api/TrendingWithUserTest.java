@@ -3,6 +3,7 @@ package com.thoughtworks.rslist.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.rslist.domain.GenderEnum;
 import com.thoughtworks.rslist.domain.User;
+import com.thoughtworks.rslist.exception.BadIndexParamException;
 import com.thoughtworks.rslist.repository.TrendingRepository;
 import com.thoughtworks.rslist.service.TrendingService;
 import com.thoughtworks.rslist.service.UserService;
@@ -56,7 +57,7 @@ public class TrendingWithUserTest {
     private TrendingController trendingController;
 
     @BeforeEach
-    void init() {
+    void init() throws BadIndexParamException {
         when(userService.addNewUser(any()))
                 .thenReturn(1);
     }

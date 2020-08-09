@@ -82,29 +82,6 @@ public class TrendingServiceTest {
     }
 
     @Test
-    public void testPurchaseTrendingWithDegreeEmpty() throws Exception {
-        Integer trendingId = 1;
-        Integer rant = 1;
-        Double amount = 100D;
-        String trendingName = "热搜测试";
-        Optional<Trade> trade = Optional.ofNullable(new Trade(100D, 1, trendingId));
-        when(trendingRepository.findById(anyInt()))
-                .thenReturn(Optional.ofNullable(TrendingEntity.builder().id(trendingId).keyWord("测试")
-                        .purchaseDegree(rant).purchasePrice(0D).totalVotes(10L).trendingName(trendingName).user(new UserEntity()).userId(1).build()));
-
-        when(trendingRepository.existsByPurchaseDegree(anyInt()))
-                .thenReturn(false);
-
-        when(trendingRepository.save(any()))
-                .thenReturn(TrendingEntity.builder().id(trendingId).keyWord("测试")
-                        .purchaseDegree(rant).purchasePrice(amount).totalVotes(10L).trendingName(trendingName).user(new UserEntity()).userId(1).build());
-        Trending result = trendingService.purchaseTrendingEvent(trade);
-
-        assertEquals(rant, result.getPurchaseDegree());
-        assertEquals(amount, result.getPurchasePrice());
-    }
-
-    @Test
     public void testPurchaseTrendingWithPriceLowerThanNow() throws BadIndexParamException {
         Integer trendingId = 1;
         Integer rant = 1;
@@ -116,8 +93,8 @@ public class TrendingServiceTest {
                 .thenReturn(Optional.ofNullable(TrendingEntity.builder().id(trendingId).keyWord("测试")
                         .purchaseDegree(rant).purchasePrice(amount).totalVotes(10L).trendingName(trendingName).user(new UserEntity()).userId(1).build()));
 
-        when(trendingRepository.existsByPurchaseDegree(anyInt()))
-                .thenReturn(true);
+        when(trendingRepository.findByPurchaseDegree(anyInt()))
+                .thenReturn(Optional.of(TrendingEntity.builder().purchasePrice(120D).build()));
 
         String error = assertThrows(BadIndexParamException.class, () -> {
             trendingService.purchaseTrendingEvent(trade);
@@ -127,5 +104,58 @@ public class TrendingServiceTest {
         verify(trendingRepository, times(1)).findById(anyInt());
         verify(purchaseEventRepository, times(0)).save(any());
         verify(trendingRepository, times(0)).save(any());
+    }
+
+    @Test
+    public void testPurchaseTrendingWithDegreeEmpty() throws Exception {
+        Integer trendingId = 1;
+        Integer rant = 1;
+        Double amount = 100D;
+        String trendingName = "热搜测试";
+        Optional<Trade> trade = Optional.ofNullable(new Trade(100D, 1, trendingId));
+        when(trendingRepository.findById(anyInt()))
+                .thenReturn(Optional.ofNullable(TrendingEntity.builder().id(trendingId).keyWord("测试")
+                        .purchaseDegree(rant).purchasePrice(0D).totalVotes(10L).trendingName(trendingName).user(new UserEntity()).userId(1).build()));
+
+        when(trendingRepository.findByPurchaseDegree(anyInt()))
+                .thenReturn(Optional.ofNullable(null));
+
+        when(trendingRepository.save(any()))
+                .thenReturn(TrendingEntity.builder().id(trendingId).keyWord("测试")
+                        .purchaseDegree(rant).purchasePrice(amount).totalVotes(10L).trendingName(trendingName).user(new UserEntity()).userId(1).build());
+        Trending result = trendingService.purchaseTrendingEvent(trade);
+
+        assertEquals(rant, result.getPurchaseDegree());
+        assertEquals(amount, result.getPurchasePrice());
+    }
+
+    @Test
+    public void testPurchaseTrendingNormal() throws BadIndexParamException {
+        Integer trendingId = 1;
+        Integer rant = 1;
+        Double amount = 80D;
+        String trendingName = "热搜测试";
+        Optional<Trade> trade = Optional.ofNullable(new Trade(90D, 1, trendingId));
+
+        when(trendingRepository.findById(anyInt()))
+                .thenReturn(Optional.ofNullable(TrendingEntity.builder().id(trendingId).keyWord("测试")
+                        .purchaseDegree(rant).purchasePrice(amount).totalVotes(10L).trendingName(trendingName).user(new UserEntity()).userId(1).build()));
+
+        when(trendingRepository.findByPurchaseDegree(anyInt()))
+                .thenReturn(Optional.ofNullable(TrendingEntity.builder().id(2).keyWord("待被购买")
+                .purchasePrice(60D).trendingName("待被购买热搜").purchaseDegree(rant).build()));
+
+        TrendingEntity trendingEntity = new TrendingEntity();
+        trendingEntity.setUser(new UserEntity());
+        when(trendingRepository.save(any()))
+                .thenReturn(trendingEntity);
+
+        trendingService.purchaseTrendingEvent(trade);
+
+        verify(trendingRepository, times(1)).findById(anyInt());
+        verify(trendingRepository, times(1)).findByPurchaseDegree(anyInt());
+        verify(trendingRepository, times(1)).deleteById(anyInt());
+        verify(purchaseEventRepository, times(1)).save(any());
+        verify(trendingRepository, times(1)).save(any());
     }
 }

@@ -97,8 +97,12 @@ public class VoteService {
             }
             List<VoteEntity> voteEntities = voteRepository.getVoteEntitiesByVoteTimeBetween(start, end);
 
-            return voteEntities.stream().map(v -> ConvertTool.convertVoteEntityToVote(v))
-                    .collect(Collectors.toList());
+            if (voteEntities != null) {
+                return voteEntities.stream().map(v -> ConvertTool.convertVoteEntityToVote(v))
+                        .collect(Collectors.toList());
+            }
+            throw new BadIndexParamException("input converting param is null " +
+                    "[name: VoteService.getVotesBetweenTimeSpan]");
         }
         throw new BadIndexParamException("invalid request param");
     }
@@ -123,9 +127,13 @@ public class VoteService {
             Pageable pageable = PageRequest.of(pageId, pageItem);
             List<VoteEntity> voteEntities = voteRepository
                     .getVoteEntitiesByUserIdAndTrendingId(uId, tId, pageable);
-            return voteEntities.stream()
-                    .map(v -> ConvertTool.convertVoteEntityToVote(v))
-                    .collect(Collectors.toList());
+            if (voteEntities != null) {
+                return voteEntities.stream()
+                        .map(v -> ConvertTool.convertVoteEntityToVote(v))
+                        .collect(Collectors.toList());
+            }
+            throw new BadIndexParamException("input converting param is null " +
+                    "[name: VoteService.getVotesWithPageable]");
         }
         throw new BadIndexParamException("userId or trendingId can not be null");
     }
