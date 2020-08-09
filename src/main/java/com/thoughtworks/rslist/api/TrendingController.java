@@ -2,6 +2,7 @@ package com.thoughtworks.rslist.api;
 
 import com.thoughtworks.rslist.domain.Trending;
 import com.thoughtworks.rslist.exception.exception_type.BadIndexParamException;
+import com.thoughtworks.rslist.exception.exception_type.TrendingShowSortException;
 import com.thoughtworks.rslist.service.TrendingService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.TreeMap;
 
 @RestController
 public class TrendingController {
@@ -32,6 +34,12 @@ public class TrendingController {
             throws BadIndexParamException {
         return ResponseEntity.ok(trendingService
                 .accessTrendingListFromStartToEndService(startId, endId));
+    }
+
+    @GetMapping("/trendings/order/all")
+    public ResponseEntity<TreeMap<Integer, Trending>> accessAllTrendingInOrder()
+            throws TrendingShowSortException {
+        return ResponseEntity.ok(trendingService.accessAllTrendingListInOrder());
     }
 
     @PostMapping("/trendings/newTrending")

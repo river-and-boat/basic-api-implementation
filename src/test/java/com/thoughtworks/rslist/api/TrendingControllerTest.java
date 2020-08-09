@@ -3,6 +3,7 @@ package com.thoughtworks.rslist.api;
 import com.thoughtworks.rslist.domain.GenderEnum;
 import com.thoughtworks.rslist.domain.Trending;
 import com.thoughtworks.rslist.domain.User;
+import com.thoughtworks.rslist.entity.TrendingEntity;
 import com.thoughtworks.rslist.entity.UserEntity;
 import com.thoughtworks.rslist.repository.TrendingRepository;
 import com.thoughtworks.rslist.repository.UserRepository;
@@ -19,9 +20,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import java.util.ArrayList;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -342,5 +346,50 @@ class TrendingControllerTest {
         mockMvc.perform(get("/trendings/range?startId=1&endId=4"))
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$[1].trendingName", is("热搜事件3")));
+    }
+
+    @Test
+    public void testShowAllTrendingListInOrder() throws Exception {
+        String expected =
+                "{\"1\":{\"id\":6,\"trendingName\":\"purchase 3\",\"keyWord\":null,\"userId\":null,\"totalVotes\":0,\"purchasePrice\":0.0,\"purchaseDegree\":1}," +
+                "\"2\":{\"id\":2,\"trendingName\":\"vote 5\",\"keyWord\":null,\"userId\":null,\"totalVotes\":100,\"purchasePrice\":0.0,\"purchaseDegree\":0}," +
+                "\"3\":{\"id\":1,\"trendingName\":\"purchase 1\",\"keyWord\":null,\"userId\":null,\"totalVotes\":0,\"purchasePrice\":0.0,\"purchaseDegree\":3}," +
+                "\"4\":{\"id\":5,\"trendingName\":\"vote 2\",\"keyWord\":null,\"userId\":null,\"totalVotes\":80,\"purchasePrice\":0.0,\"purchaseDegree\":0}," +
+                "\"5\":{\"id\":3,\"trendingName\":\"purchase 2\",\"keyWord\":null,\"userId\":null,\"totalVotes\":0,\"purchasePrice\":0.0,\"purchaseDegree\":5}," +
+                "\"6\":{\"id\":4,\"trendingName\":\"vote 1\",\"keyWord\":null,\"userId\":null,\"totalVotes\":50,\"purchasePrice\":0.0,\"purchaseDegree\":0}," +
+                "\"7\":{\"id\":7,\"trendingName\":\"vote 4\",\"keyWord\":null,\"userId\":null,\"totalVotes\":30,\"purchasePrice\":0.0,\"purchaseDegree\":0}," +
+                "\"8\":{\"id\":8,\"trendingName\":\"vote 3\",\"keyWord\":null,\"userId\":null,\"totalVotes\":10,\"purchasePrice\":0.0,\"purchaseDegree\":0}}";
+
+        UserEntity userEntity = new UserEntity();
+        userEntity.setAge(32);
+        userEntity.setUserName("admin");
+        userEntity.setEmail("hellocq@163.com");
+        userEntity.setGenderEnum(GenderEnum.MALE);
+        userEntity.setPhone("15326147230");
+        userRepository.save(userEntity);
+
+        trendingRepository.save(TrendingEntity.builder().trendingName("purchase 1")
+                .user(UserEntity.builder().id(1).build()).purchaseDegree(3).build());
+        trendingRepository.save(TrendingEntity.builder().trendingName("vote 5")
+                .user(UserEntity.builder().id(1).build()).purchaseDegree(0).totalVotes(100L).build());
+        trendingRepository.save(TrendingEntity.builder().trendingName("purchase 2")
+                .user(UserEntity.builder().id(1).build()).purchaseDegree(5).build());
+        trendingRepository.save(TrendingEntity.builder().trendingName("vote 1")
+                .user(UserEntity.builder().id(1).build()).purchaseDegree(0).totalVotes(50L).build());
+        trendingRepository.save(TrendingEntity.builder().trendingName("vote 2")
+                .user(UserEntity.builder().id(1).build()).purchaseDegree(0).totalVotes(80L).build());
+        trendingRepository.save(TrendingEntity.builder().trendingName("purchase 3")
+                .user(UserEntity.builder().id(1).build()).purchaseDegree(1).build());
+        trendingRepository.save(TrendingEntity.builder().trendingName("vote 4")
+                .user(UserEntity.builder().id(1).build()).purchaseDegree(0).totalVotes(30L).build());
+        trendingRepository.save(TrendingEntity.builder().trendingName("vote 3")
+                .user(UserEntity.builder().id(1).build()).purchaseDegree(0).totalVotes(10L).build());
+
+        mockMvc.perform(get("/trendings/order/all"))
+                .andExpect(MockMvcResultMatchers.content().json(expected))
+                .andExpect(status().isOk());
+
+        List<String> trendingNameArray = Arrays.asList("购买测试3", "投票测试5", "购买测试1", "投票测试2",
+                "购买测试2", "投票测试1", "投票测试4", "投票测试3");
     }
 }

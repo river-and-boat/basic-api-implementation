@@ -41,29 +41,34 @@ public class ConvertTool {
     }
 
     public static Trending convertTrendingEntityToTrending(TrendingEntity trendingEntity) {
-        return Trending.builder()
+        Trending.TrendingBuilder trendingBuilder = Trending.builder()
                 .id(trendingEntity.getId())
                 .userId(trendingEntity.getUserId())
                 .trendingName(trendingEntity.getTrendingName())
                 .keyWord(trendingEntity.getKeyWord())
                 .purchaseDegree(trendingEntity.getPurchaseDegree())
                 .purchasePrice(trendingEntity.getPurchasePrice())
-                .totalVotes(trendingEntity.getTotalVotes())
-                .user(convertUserEntityToUser(trendingEntity.getUser()))
-                .build();
+                .totalVotes(trendingEntity.getTotalVotes());
+        if (trendingEntity.getUser() != null) {
+            trendingBuilder = trendingBuilder
+                    .user(convertUserEntityToUser(trendingEntity.getUser()));
+        }
+        return trendingBuilder.build();
     }
 
     public static TrendingEntity convertTrendingToTrendingEntity(Trending trending) {
-        return TrendingEntity.builder()
+        TrendingEntity.TrendingEntityBuilder trendingEntityBuilder = TrendingEntity.builder()
                 .id(trending.getId())
                 .userId(trending.getUser().getId())
                 .trendingName(trending.getTrendingName())
                 .keyWord(trending.getKeyWord())
                 .purchaseDegree(trending.getPurchaseDegree())
                 .purchasePrice(trending.getPurchasePrice())
-                .totalVotes(trending.getTotalVotes())
-                .user(convertUserToUserEntity(trending.getUser()))
-                .build();
+                .totalVotes(trending.getTotalVotes());
+        if (trending.getUser() != null) {
+            trendingEntityBuilder = trendingEntityBuilder.user(convertUserToUserEntity(trending.getUser()));
+        }
+        return trendingEntityBuilder.build();
     }
 
     public static VoteEntity convertVoteToVoteEntity(Vote vote) {
