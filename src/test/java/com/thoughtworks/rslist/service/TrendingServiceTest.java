@@ -1,4 +1,4 @@
-package com.thoughtworks.rslist.api.unit;
+package com.thoughtworks.rslist.service;
 
 import com.thoughtworks.rslist.domain.Trade;
 import com.thoughtworks.rslist.domain.Trending;
@@ -8,7 +8,6 @@ import com.thoughtworks.rslist.exception.BadIndexParamException;
 import com.thoughtworks.rslist.repository.PurchaseEventRepository;
 import com.thoughtworks.rslist.repository.TrendingRepository;
 import com.thoughtworks.rslist.repository.UserRepository;
-import com.thoughtworks.rslist.service.TrendingService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,8 +15,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Optional;
 
@@ -33,11 +30,9 @@ import static org.mockito.MockitoAnnotations.initMocks;
  * @Date 2020/8/8 15:54
  * @Description ***
  **/
-@SpringBootTest
-@AutoConfigureMockMvc
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public class TrendingControllerTest {
+public class TrendingServiceTest {
 
     @Mock
     private TrendingRepository trendingRepository;
