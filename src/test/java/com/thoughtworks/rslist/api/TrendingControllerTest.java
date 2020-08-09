@@ -23,7 +23,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -583,7 +582,50 @@ class TrendingControllerTest {
         assertEquals(rant, purchaseEntity.getPurchaseDegree());
     }
 
-    public void testPurchaseTrendingWithExceptionAndRollBack() {
+    // 该测试只有在程序中手动抛出异常，触发事务才能通过
+    @Test
+    public void testPurchaseTrendingWithExceptionAndRollBack() throws Exception {
+        UserEntity userEntity = new UserEntity();
+        userEntity.setAge(32);
+        userEntity.setUserName("admin");
+        userEntity.setEmail("hellocq@163.com");
+        userEntity.setGenderEnum(GenderEnum.MALE);
+        userEntity.setPhone("15326147230");
+        userRepository.save(userEntity);
 
+        // 给出的数据中，vote 2已经存在，等级为2，购买价格为70D
+        trendingRepository.save(TrendingEntity.builder().trendingName("vote 1")
+                .user(UserEntity.builder().id(1).build()).purchaseDegree(0).totalVotes(100L).build());
+        trendingRepository.save(TrendingEntity.builder().trendingName("vote 2")
+                .user(UserEntity.builder().id(1).build()).purchaseDegree(2).purchasePrice(70D).totalVotes(100L).build());
+        trendingRepository.save(TrendingEntity.builder().trendingName("vote 3")
+                .user(UserEntity.builder().id(1).build()).purchaseDegree(0).totalVotes(100L).build());
+
+        // 把事件1买到热搜第二位
+        Integer trendingId = 1;
+        Integer rant = 2;
+        Double amount = 80D;
+        Trade trade = new Trade(amount, rant, trendingId);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        mockMvc.perform(post("/trending/purchase")
+                .content(objectMapper.writeValueAsString(trade))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+
+        TrendingEntity trendingEntity = trendingRepository.findById(trendingId).get();
+        assertEquals(0, trendingEntity.getPurchaseDegree());
+        assertEquals(0, trendingEntity.getPurchaseDegree());
+
+        TrendingEntity rollEntity = trendingRepository.findById(2).get();
+        assertEquals(70D, rollEntity.getPurchasePrice());
+        assertEquals(2, rollEntity.getPurchaseDegree());
+
+        int size = trendingRepository.findAll().size();
+        assertEquals(3, size);
+
+        int purchaseEntity = purchaseEventRepository.findAll().size();
+        assertEquals(0, purchaseEntity);
     }
 }

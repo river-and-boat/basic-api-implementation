@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface PurchaseEventRepository extends CrudRepository<PurchaseEntity, Integer> {
     List<PurchaseEntity> findByTrendingName(String trendingName);
+    List<PurchaseEntity> findAll();
 }

@@ -189,7 +189,8 @@ public class TrendingService {
         }
         TrendingEntity result = trendingRepository.save(presentTrending);
         if (result != null) {
-            return ConvertTool.convertTrendingEntityToTrending(result);
+            throw new BadIndexParamException("Test Transaction");
+            //return ConvertTool.convertTrendingEntityToTrending(result);
         }
         throw new BadIndexParamException("input converting param is null " +
                 "[name: TrendingService.updatePurchaseEvent]");
