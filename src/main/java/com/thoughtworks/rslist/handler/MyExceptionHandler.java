@@ -23,16 +23,13 @@ public class MyExceptionHandler {
 
     Logger logger = LoggerFactory.getLogger(MyExceptionHandler.class);
 
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity exceptionHandler(RuntimeException ex) {
-        CommonException commonException = null;
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity exceptionHandler(Exception ex) {
         CommonExceptionMessage commonExceptionMessage = new CommonExceptionMessage();
         if (ex instanceof MethodArgumentTypeMismatchException) {
             commonExceptionMessage.setError("The datetime is bad format");
-            commonException = new CommonException(commonExceptionMessage);
         } else {
-            commonException = (CommonException) ex;
-            commonExceptionMessage = commonException.getCommonExceptionMessage();
+            commonExceptionMessage.setError(ex.getMessage());
         }
         logger.error(ex.getMessage());
         return ResponseEntity.badRequest().body(commonExceptionMessage);
