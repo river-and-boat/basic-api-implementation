@@ -16,4 +16,5 @@ import java.util.List;
 @Repository
 public interface UserRepository extends CrudRepository<UserEntity, Integer> {
     public List<UserEntity> findAll();
+    public boolean existsByUserName(String username);
 }

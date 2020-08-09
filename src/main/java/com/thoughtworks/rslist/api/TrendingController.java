@@ -7,6 +7,7 @@ import com.thoughtworks.rslist.exception.exception_type.TrendingShowSortExceptio
 import com.thoughtworks.rslist.service.TrendingService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -44,8 +45,11 @@ public class TrendingController {
     }
 
     @PostMapping("/trendings/newTrending")
-    public ResponseEntity addNewTrending(@RequestBody @Validated Optional<Trending> newTrending)
+    public ResponseEntity addNewTrending(@RequestBody @Validated Optional<Trending> newTrending, BindingResult bindingResult)
             throws BadIndexParamException {
+        if (bindingResult.hasErrors()) {
+            throw new BadIndexParamException("trending valid fail. name: [TrendingController.addNewTrending]");
+        }
         Trending trendingResult = trendingService.addNewTrending(newTrending);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .header("add", trendingResult.getId().toString())

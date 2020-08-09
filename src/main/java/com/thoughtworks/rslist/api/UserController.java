@@ -6,6 +6,7 @@ import com.thoughtworks.rslist.exception.exception_type.MysqlOperatingException;
 import com.thoughtworks.rslist.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -33,8 +34,11 @@ public class UserController {
     }
 
     @PostMapping("/users/")
-    public ResponseEntity addNewUser(@RequestBody @Valid Optional<User> newUser)
+    public ResponseEntity addNewUser(@RequestBody @Valid Optional<User> newUser, BindingResult bindingResult)
             throws BadIndexParamException {
+        if (bindingResult.hasErrors()) {
+            throw new BadIndexParamException("user valid fail. name: [UserController.addNewUser]");
+        }
         Integer userId = userService.addNewUser(newUser);
         if (userId > 0) {
             return ResponseEntity.status(HttpStatus.CREATED)

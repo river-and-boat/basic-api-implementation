@@ -44,6 +44,9 @@ public class UserService {
             User convertingUser = newUser.get();
             // 类型转换
             UserEntity userEntity = ConvertTool.convertUserToUserEntity(convertingUser);
+            if (userRepository.existsByUserName(convertingUser.getUserName())) {
+                throw new BadIndexParamException("exist user name. name: [UserService.addNewUser]");
+            }
             UserEntity saveUser = userRepository.save(userEntity);
             if (saveUser != null) {
                 return saveUser.getId();

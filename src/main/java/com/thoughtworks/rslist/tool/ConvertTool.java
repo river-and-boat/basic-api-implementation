@@ -26,7 +26,6 @@ public class ConvertTool {
                 .voteNum(userEntity.getVoteNum())
                 .email(userEntity.getEmail())
                 .phone(userEntity.getPhone()).build();
-
     }
 
     public static UserEntity convertUserToUserEntity(User user) {

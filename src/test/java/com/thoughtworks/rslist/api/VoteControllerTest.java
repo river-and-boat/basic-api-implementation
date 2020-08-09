@@ -13,12 +13,11 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
@@ -34,7 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class VoteControllerTest {
 
     @Autowired
@@ -110,10 +109,10 @@ class VoteControllerTest {
         userEntity.setGenderEnum(GenderEnum.MALE);
         userEntity.setEmail("hello@cq.com");
         userEntity.setAge(26);
-        //userEntity.setVoteNum(10);
+        userEntity.setVoteNum(10);
         userRepository.save(userEntity);
 
-        Integer latestUserId = userRepository.findAll().get(0).getId();
+        Integer latestUserId = 1;
 
         String trendingStr = "{\"trendingName\":\"Trend 6\", " +
                 "\"keyWord\":\"no\"," + "\"user\" :{\"id\":" + latestUserId + ", \"user_name\":\"Admin\", \"user_age\": 32, \"vote_num\":10, " +
@@ -129,7 +128,7 @@ class VoteControllerTest {
         Vote vote = new Vote();
         vote.setNum(8);
         vote.setUserId(latestUserId);
-        vote.setVoteTime(LocalDateTime.parse(voteTime, df));
+        //vote.setVoteTime(LocalDateTime.parse(voteTime, df));
 
         ObjectMapper objectMapper = new ObjectMapper();
 
@@ -257,7 +256,7 @@ class VoteControllerTest {
 
         String endTime = "2007-08-08 00:00:00";
 
-        mockMvc.perform(get("/trendings")
+        mockMvc.perform(get("/time/voteEvents")
                 .param("endTime", endTime))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error", is("invalid request param")));
@@ -267,9 +266,7 @@ class VoteControllerTest {
     public void getVoteEventsWhenStartTimeAfterEndTime()
             throws Exception {
         Integer countDatas = 10;
-
         DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
         String voteTime = "";
 
         for (int i = 1; i < countDatas; i++) {

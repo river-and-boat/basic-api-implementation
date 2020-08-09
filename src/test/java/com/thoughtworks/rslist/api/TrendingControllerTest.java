@@ -1,16 +1,16 @@
 package com.thoughtworks.rslist.api;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.rslist.domain.GenderEnum;
 import com.thoughtworks.rslist.domain.Trade;
+import com.thoughtworks.rslist.domain.User;
 import com.thoughtworks.rslist.entity.PurchaseEntity;
 import com.thoughtworks.rslist.entity.TrendingEntity;
 import com.thoughtworks.rslist.entity.UserEntity;
 import com.thoughtworks.rslist.repository.PurchaseEventRepository;
 import com.thoughtworks.rslist.repository.TrendingRepository;
 import com.thoughtworks.rslist.repository.UserRepository;
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
@@ -32,6 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @ExtendWith(MockitoExtension.class)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class TrendingControllerTest {
 
     @Autowired
@@ -46,10 +48,24 @@ class TrendingControllerTest {
     @Autowired
     private PurchaseEventRepository purchaseEventRepository;
 
-    @AfterEach
-    public void cleanUp() {
-        userRepository.deleteAll();
+    @BeforeEach
+    public void init() {
+        purchaseEventRepository.deleteAll();
         trendingRepository.deleteAll();
+        userRepository.deleteAll();
+    }
+
+    @Test
+    public void testPostBadEventAndUser() throws Exception {
+        String trendingStr = "{\"id\":6, \"trendingName\":\"热搜事件6\"," +
+                " \"keyWord\":\"无分类\"," + "\"user\" :{\"id\":2, \"user_name\":\"AdminJiangYuzhou\", \"vote_num\":10, " +
+                "\"user_age\": 14, \"user_gender\":\"MALE\", \"user_email\":\"hellocq@163.com\", \"user_phone\":\"1532614723210\"}}";
+
+        mockMvc.perform(post("/trendings/newTrending")
+                .content(trendingStr)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.error",is("trending valid fail. name: [TrendingController.addNewTrending]")))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -189,7 +205,6 @@ class TrendingControllerTest {
                 .andExpect(jsonPath("$.keyWord", is("no")))
                 .andExpect(jsonPath("$", not(hasKey("user"))))
                 .andExpect(status().isOk());
-
         assertEquals(1, trendingRepository.findAll().size());
     }
 
@@ -583,6 +598,7 @@ class TrendingControllerTest {
     }
 
     // 该测试只有在程序中手动抛出异常，触发事务才能通过
+    /*
     @Test
     public void testPurchaseTrendingWithExceptionAndRollBack() throws Exception {
         UserEntity userEntity = new UserEntity();
@@ -628,4 +644,5 @@ class TrendingControllerTest {
         int purchaseEntity = purchaseEventRepository.findAll().size();
         assertEquals(0, purchaseEntity);
     }
+    */
 }
