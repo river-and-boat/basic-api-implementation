@@ -5,6 +5,7 @@ import com.thoughtworks.rslist.domain.Trending;
 import com.thoughtworks.rslist.entity.TrendingEntity;
 import com.thoughtworks.rslist.entity.UserEntity;
 import com.thoughtworks.rslist.exception.exception_type.BadIndexParamException;
+import com.thoughtworks.rslist.exception.exception_type.TrendingShowSortException;
 import com.thoughtworks.rslist.repository.PurchaseEventRepository;
 import com.thoughtworks.rslist.repository.TrendingRepository;
 import com.thoughtworks.rslist.repository.UserRepository;
@@ -15,7 +16,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import java.util.Optional;
+
+import java.util.*;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -141,7 +144,7 @@ public class TrendingServiceTest {
 
         when(trendingRepository.findByPurchaseDegree(anyInt()))
                 .thenReturn(Optional.ofNullable(TrendingEntity.builder().id(2).keyWord("待被购买")
-                .purchasePrice(60D).trendingName("待被购买热搜").purchaseDegree(rant).build()));
+                        .purchasePrice(60D).trendingName("待被购买热搜").purchaseDegree(rant).build()));
 
         TrendingEntity trendingEntity = new TrendingEntity();
         trendingEntity.setUser(new UserEntity());
@@ -155,5 +158,42 @@ public class TrendingServiceTest {
         verify(trendingRepository, times(1)).deleteById(anyInt());
         verify(purchaseEventRepository, times(1)).save(any());
         verify(trendingRepository, times(1)).save(any());
+    }
+
+    @Test
+    public void testShowTrendingListInOrder() throws TrendingShowSortException {
+        when(trendingRepository.findByPurchaseDegreeGreaterThan(anyInt()))
+                .thenReturn(new ArrayList<TrendingEntity>() {
+                    {
+                        add(TrendingEntity.builder().trendingName("购买测试1").user(new UserEntity()).purchaseDegree(3).build());
+                        add(TrendingEntity.builder().trendingName("购买测试2").user(new UserEntity()).purchaseDegree(5).build());
+                        add(TrendingEntity.builder().trendingName("购买测试3").user(new UserEntity()).purchaseDegree(1).build());
+
+                    }
+                });
+
+        when(trendingRepository.findByPurchaseDegreeEqualsOrderByTotalVotesDesc(anyInt()))
+                .thenReturn(new ArrayList<TrendingEntity>() {
+                    {
+                        add(TrendingEntity.builder().trendingName("投票测试5").user(new UserEntity()).purchaseDegree(0).totalVotes(100L).build());
+                        add(TrendingEntity.builder().trendingName("投票测试2").user(new UserEntity()).purchaseDegree(0).totalVotes(80L).build());
+                        add(TrendingEntity.builder().trendingName("投票测试1").user(new UserEntity()).purchaseDegree(0).totalVotes(50L).build());
+                        add(TrendingEntity.builder().trendingName("投票测试4").user(new UserEntity()).purchaseDegree(0).totalVotes(30L).build());
+                        add(TrendingEntity.builder().trendingName("投票测试3").user(new UserEntity()).purchaseDegree(0).totalVotes(10L).build());
+                    }
+                });
+
+        TreeMap<Integer, Trending> result = trendingService.accessAllTrendingListInOrder();
+        assertEquals(8, result.size());
+
+        List<String> trendingNameArray = Arrays.asList("购买测试3", "投票测试5", "购买测试1", "投票测试2",
+                "购买测试2", "投票测试1", "投票测试4", "投票测试3");
+        Integer index = 0;
+        Iterator<Map.Entry<Integer, Trending>> iterator = result.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<Integer, Trending> next = iterator.next();
+            assertEquals(trendingNameArray.get(index), next.getValue().getTrendingName());
+            index += 1;
+        }
     }
 }

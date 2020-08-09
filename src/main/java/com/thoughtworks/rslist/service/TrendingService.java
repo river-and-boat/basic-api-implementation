@@ -5,6 +5,7 @@ import com.thoughtworks.rslist.domain.Trending;
 import com.thoughtworks.rslist.domain.User;
 import com.thoughtworks.rslist.entity.TrendingEntity;
 import com.thoughtworks.rslist.exception.exception_type.BadIndexParamException;
+import com.thoughtworks.rslist.exception.exception_type.TrendingShowSortException;
 import com.thoughtworks.rslist.repository.PurchaseEventRepository;
 import com.thoughtworks.rslist.repository.TrendingRepository;
 import com.thoughtworks.rslist.repository.UserRepository;
@@ -13,7 +14,9 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 /**
@@ -29,6 +32,8 @@ public class TrendingService {
     private final UserRepository userRepository;
 
     private final PurchaseEventRepository purchaseEventRepository;
+
+    private final static Integer DEFAULT_TRENDING_DEGREE = 0;
 
     public TrendingService(TrendingRepository trendingRepository,
                            UserRepository userRepository,
@@ -69,6 +74,31 @@ public class TrendingService {
             }
         }
         throw new BadIndexParamException("invalid request param");
+    }
+
+    public TreeMap<Integer, Trending> accessAllTrendingListInOrder() throws TrendingShowSortException {
+        List<TrendingEntity> purchasedTrendingList = trendingRepository
+                .findByPurchaseDegreeGreaterThan(DEFAULT_TRENDING_DEGREE);
+        List<TrendingEntity> votedTrendingList = trendingRepository
+                .findByPurchaseDegreeEqualsOrderByTotalVotesDesc(DEFAULT_TRENDING_DEGREE);
+
+        if (purchasedTrendingList == null || votedTrendingList == null) {
+            throw new TrendingShowSortException("show trending list with unknown error: " +
+                    "[name: TrendingService.accessAllTrendingListInOrder]");
+        }
+        Map<Integer, Trending> hashMap = purchasedTrendingList.stream()
+                .collect(Collectors.toMap(TrendingEntity::getPurchaseDegree, k -> ConvertTool.convertTrendingEntityToTrending(k)));
+        TreeMap<Integer, Trending> resultMap = new TreeMap<>(hashMap);
+        Integer votedTrendingId = 1;
+        int votedEventsLength = votedTrendingList.size();
+        for (int i = 0; i < votedEventsLength; ) {
+            if (!resultMap.containsKey(votedTrendingId)) {
+                resultMap.put(votedTrendingId, ConvertTool.convertTrendingEntityToTrending(votedTrendingList.get(i)));
+                i += 1;
+            }
+            votedTrendingId += 1;
+        }
+        return resultMap;
     }
 
     public Trending addNewTrending(Optional<Trending> newTrending)

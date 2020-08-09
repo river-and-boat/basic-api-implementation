@@ -17,4 +17,6 @@ public interface TrendingRepository extends CrudRepository<TrendingEntity, Integ
     List<TrendingEntity> findAll();
     List<TrendingEntity> findByIdBetween(Integer startId, Integer endId);
     Optional<TrendingEntity> findByPurchaseDegree(Integer purchasePrice);
+    List<TrendingEntity> findByPurchaseDegreeGreaterThan(Integer degree);
+    List<TrendingEntity> findByPurchaseDegreeEqualsOrderByTotalVotesDesc(Integer degree);
 }
